@@ -15,7 +15,7 @@ namespace Driver
         public DriverDBContext()
             : base("name=DriverDB")
         {
-//            Database.SetInitializer(new MigrateDatabaseToLatestVersion<DriverDBContext, Configuration>());
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<DriverDBContext, Migrations.Configuration>());
         }
         public DbSet<Data> Datas { get; set; }
     }

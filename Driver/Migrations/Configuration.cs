@@ -10,6 +10,7 @@ namespace Driver.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = true;
+            AutomaticMigrationDataLossAllowed = false;
         }
 
         protected override void Seed(Driver.DriverDBContext context)
