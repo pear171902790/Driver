@@ -45,6 +45,7 @@ namespace Driver
         public string PhoneNumber { get; set; }
         public string CarType { get; set; }
         public string CarNumber { get; set; }
+        public int Integral { get; set; }
     }
 
     //请求地址：http://114.215.157.116/api/UploadPosition
