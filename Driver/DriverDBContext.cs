@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Configuration;
 using System.Data.Entity;
 using System.Linq;
 using System.Text;
@@ -14,7 +15,7 @@ namespace Driver
         public DriverDBContext()
             : base("name=DriverDB")
         {
-
+//            Database.SetInitializer(new MigrateDatabaseToLatestVersion<DriverDBContext, Configuration>());
         }
         public DbSet<Data> Datas { get; set; }
     }
