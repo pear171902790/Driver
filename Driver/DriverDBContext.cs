@@ -9,15 +9,20 @@ using System.Threading.Tasks;
 
 namespace Driver
 {
-    
     public class DriverDBContext : DbContext
     {
+        private static DriverDBContext _driverDbContext;
         public DriverDBContext()
             : base("name=DriverDB")
         {
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<DriverDBContext, Migrations.Configuration>());
         }
         public DbSet<Data> Datas { get; set; }
+
+        public static DriverDBContext Instance
+        {
+            get { return _driverDbContext ?? (_driverDbContext = new DriverDBContext()); }
+        }
     }
 
     public class Data
