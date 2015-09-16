@@ -22,25 +22,25 @@ namespace Driver
 
         public static JsonResult PhoneNumberAlreadySignUp
         {
-            get { return new JsonResult() {Data = new ApiResponse("201", "该手机号已经被注册", string.Empty)}; }
+            get { return new JsonResult() { Data = new ApiResponse("201", "该手机号已经被注册", string.Empty), JsonRequestBehavior = JsonRequestBehavior.AllowGet }; }
         }
         public static JsonResult UnknownError
         {
-            get { return new JsonResult() { Data = new ApiResponse("300", "未知错误", string.Empty) }; }
+            get { return new JsonResult() { Data = new ApiResponse("300", "未知错误", string.Empty), JsonRequestBehavior = JsonRequestBehavior.AllowGet }; }
         }
 
         public static JsonResult OK(string result)
         {
-            return new JsonResult() {Data = new ApiResponse("200", string.Empty, result)};
+            return new JsonResult() {Data = new ApiResponse("200", string.Empty, result),JsonRequestBehavior = JsonRequestBehavior.AllowGet};
         }
         public static JsonResult UserNotExist
         {
-            get { return new JsonResult() { Data = new ApiResponse("202", "用户不存在", string.Empty) }; }
+            get { return new JsonResult() { Data = new ApiResponse("202", "用户不存在", string.Empty), JsonRequestBehavior = JsonRequestBehavior.AllowGet }; }
         }
 
         public static JsonResult PasswordError
         {
-            get { return new JsonResult() { Data = new ApiResponse("203", "密码错误", string.Empty) }; }
+            get { return new JsonResult() { Data = new ApiResponse("203", "密码错误", string.Empty), JsonRequestBehavior = JsonRequestBehavior.AllowGet }; }
         }
     }
 }

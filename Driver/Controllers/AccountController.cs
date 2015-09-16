@@ -10,7 +10,6 @@ namespace Driver.Controllers
 {
     public class AccountController : Controller
     {
-
         [HttpPut, Route("api/SignUp")]
         public ActionResult SignUp([ModelBinder(typeof(JsonBinder<SignUpRequest>))]SignUpRequest signUpRequest)
         {
@@ -71,6 +70,12 @@ namespace Driver.Controllers
             {
                 return ApiResponse.UnknownError;
             }
+        }
+
+        [HttpGet,Route("api/test")]
+        public ActionResult Test()
+        {
+            return Content("test");
         }
     }
 }
