@@ -38,6 +38,11 @@ namespace Driver
             get { return new JsonResult() { Data = new ApiResponse("202", "用户不存在", string.Empty), JsonRequestBehavior = JsonRequestBehavior.AllowGet }; }
         }
 
+        public static JsonResult NotPhoneNumber
+        {
+            get { return new JsonResult() { Data = new ApiResponse("204", "请用手机号码注册", string.Empty), JsonRequestBehavior = JsonRequestBehavior.AllowGet }; }
+        }
+
         public static JsonResult PasswordError
         {
             get { return new JsonResult() { Data = new ApiResponse("203", "密码错误", string.Empty), JsonRequestBehavior = JsonRequestBehavior.AllowGet }; }

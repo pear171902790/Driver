@@ -1,0 +1,34 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "title";
+}
+
+<h2>title</h2>
+<input type="button" value="sign up" onclick="signUp()" />
+
+<script>
+    var signUp = function () {
+        var obj = { PhoneNumber: '13572898620', CarType: 'aa', CarNumber: 'bb', Password: 'dsfadfsaf' }
+        $.ajax({
+            url: '@Url.Action("SignUp", "Account")',
+            type: 'PUT',
+            data: JSON.stringify(obj),
+            success: function (result) {
+                console.log(result);
+            }
+        });
+
+//        var obj = { PhoneNumber: '13572898620', CarType: 'aa', CarNumber: 'bb', Password: 'dsfadfsaf' }
+//        $.ajax({
+//            url: 'http://114.215.157.116/api/SignUp',
+//            type: 'PUT',
+//            data: JSON.stringify(obj),
+//            success: function (result) {
+//                console.log(result);
+//            }
+//        });
+    }
+</script>
+
+

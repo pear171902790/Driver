@@ -15,6 +15,11 @@ namespace Driver.Controllers
         {
             try
             {
+                var isPhoneNumber = System.Text.RegularExpressions.Regex.IsMatch(signUpRequest.PhoneNumber, @"^[1]+[3,5]+\d{9}");
+                if (!isPhoneNumber)
+                {
+                    return ApiResponse.NotPhoneNumber;
+                }
                 var count = DriverDBContext.Instance.Datas.Count(x => x.PhoneNumber == signUpRequest.PhoneNumber);
                 if (count > 0)
                 {

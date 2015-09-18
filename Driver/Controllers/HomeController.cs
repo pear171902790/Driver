@@ -12,5 +12,10 @@ namespace Driver.Controllers
         {
             return new ContentResult() {Content = "hello driver"};
         }
+
+        public ActionResult Test()
+        {
+            return View();
+        }
     }
 }

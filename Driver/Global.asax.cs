@@ -17,7 +17,7 @@ namespace Driver
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-            var list = new DriverDBContext().Datas.Take(1).ToList();
+            var list = DriverDBContext.Instance.Datas.Take(1).ToList();
         }
     }
 }
