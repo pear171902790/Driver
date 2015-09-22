@@ -15,6 +15,7 @@ namespace Driver.Controllers
         {
             try
             {
+                if (signUpRequest == null) return ApiResponse.ParameterError;
                 var isPhoneNumber = System.Text.RegularExpressions.Regex.IsMatch(signUpRequest.PhoneNumber, @"^[1]+[3,5]+\d{9}");
                 if (!isPhoneNumber)
                 {
@@ -50,6 +51,7 @@ namespace Driver.Controllers
         {
             try
             {
+                if (string.IsNullOrEmpty(base64)) return ApiResponse.ParameterError;
                 var json = base64.ToStr();
                 var signInRequest = JsonConvert.DeserializeObject<SignInRequest>(json);
                 var userData = DriverDBContext.Instance.Datas.SingleOrDefault(x => x.PhoneNumber == signInRequest.PhoneNumber);

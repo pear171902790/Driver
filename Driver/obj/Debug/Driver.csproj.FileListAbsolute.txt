@@ -145,3 +145,8 @@ C:\Projects\Driver\Driver\obj\Debug\Driver.Migrations.first.resources
 C:\Projects\Driver\Driver\obj\Debug\Driver.csproj.GenerateResource.Cache
 C:\Projects\Driver\Driver\obj\Debug\Driver.dll
 C:\Projects\Driver\Driver\obj\Debug\Driver.pdb
+C:\Users\John\Documents\GitHub\Driver\Driver\bin\log4net.dll
+C:\Users\John\Documents\GitHub\Driver\Driver\bin\this.Log-log4net.dll
+C:\Users\John\Documents\GitHub\Driver\Driver\bin\this.Log.dll
+C:\Users\John\Documents\GitHub\Driver\Driver\bin\log4net.xml
+C:\Users\John\Documents\GitHub\Driver\Driver\bin\log4net.config
