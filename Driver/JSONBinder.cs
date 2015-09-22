@@ -32,12 +32,9 @@ namespace Driver
             }
             catch (Exception)
             {
-                return null;
-            }
-            finally
-            {
                 var logger = LogManager.GetLogger(typeof(HttpRequest));
                 logger.Error("bind model error");
+                return null;
             }
         }
     }
