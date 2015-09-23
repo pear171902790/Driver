@@ -84,5 +84,11 @@ namespace Driver.Controllers
         {
             return Content("test");
         }
+
+        public ActionResult Options()
+        {
+            return null; 
+
+        }
     }
 }

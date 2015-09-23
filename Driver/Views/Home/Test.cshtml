@@ -5,29 +5,44 @@
 }
 
 <h2>title</h2>
-<input type="button" value="sign up" onclick="signUp()" />
+<input type="button" value="sign up" onclick="signUp()"/>
+<input type="button" value="test" onclick="test()" />
 
 <script>
     var signUp = function () {
-        var obj = { PhoneNumber: '13572898620', CarType: 'aa', CarNumber: 'bb', Password: 'dsfadfsaf' }
+        var obj = { PhoneNumber: '13572897630', CarType: 'aa', CarNumber: 'bb', Password: 'dsfadfsaf' }
         $.ajax({
-            url: '@Url.Action("SignUp", "Account")',
+//            url: '@Url.Action("SignUp", "Account")',
+            url: 'http://114.215.157.116/api/SignUp',
             type: 'PUT',
             data: JSON.stringify(obj),
+            dataType:'json',
             success: function (result) {
                 console.log(result);
             }
         });
+    }
 
-//        var obj = { PhoneNumber: '13572898620', CarType: 'aa', CarNumber: 'bb', Password: 'dsfadfsaf' }
-//        $.ajax({
-//            url: 'http://114.215.157.116/api/SignUp',
-//            type: 'PUT',
+    var test = function () {
+        $.ajax({
+            url: 'http://114.215.157.116/api/test',
+            type: 'get',
 //            data: JSON.stringify(obj),
-//            success: function (result) {
-//                console.log(result);
-//            }
-//        });
+            success: function (result) {
+                console.log(result);
+                var obj = { PhoneNumber: '13572897630', CarType: 'aa', CarNumber: 'bb', Password: 'dsfadfsaf' }
+                $.ajax({
+                    //            url: '@Url.Action("SignUp", "Account")',
+                    url: 'http://114.215.157.116/api/SignUp',
+                    type: 'PUT',
+                    data: JSON.stringify(obj),
+                    dataType: 'json',
+                    success: function (result) {
+                        console.log(result);
+                    }
+                });
+            }
+        });
     }
 </script>
 
