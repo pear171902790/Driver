@@ -150,3 +150,4 @@ C:\Users\John\Documents\GitHub\Driver\Driver\bin\this.Log-log4net.dll
 C:\Users\John\Documents\GitHub\Driver\Driver\bin\this.Log.dll
 C:\Users\John\Documents\GitHub\Driver\Driver\bin\log4net.xml
 C:\Users\John\Documents\GitHub\Driver\Driver\bin\log4net.config
+C:\Users\John\Documents\GitHub\Driver\Driver\obj\Debug\Driver.csprojResolveAssemblyReference.cache

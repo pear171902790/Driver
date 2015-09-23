@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Driver;
 
 namespace TestAPI
 {
@@ -11,7 +12,10 @@ namespace TestAPI
     {
         static  void Main(string[] args)
         {
-           TestPut().Wait();
+//           TestPut().Wait();
+            var str = "eyJQaG9uZU51bWJlciI6IjEzODE2NzY5NzY0IiwiUGFzc3dvcmQiOiJlMTBhZGMzOTQ5YmE1OWFiYmU1NmUwNTdmMjBmODgzZSJ9";
+            var a = str.ToStr();
+            Console.WriteLine(a);
             Console.ReadLine();
         }
         //localhost:31437
