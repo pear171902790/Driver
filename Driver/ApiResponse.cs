@@ -29,7 +29,7 @@ namespace Driver
             get { return new JsonResult() { Data = new ApiResponse("300", "Î´Öª´íÎó", string.Empty), JsonRequestBehavior = JsonRequestBehavior.AllowGet }; }
         }
 
-        public static JsonResult OK(string result)
+        public static JsonResult OK(string result="Success")
         {
             return new JsonResult() {Data = new ApiResponse("200", string.Empty, result),JsonRequestBehavior = JsonRequestBehavior.AllowGet};
         }

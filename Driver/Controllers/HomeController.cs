@@ -13,6 +13,21 @@ namespace Driver.Controllers
             return new ContentResult() {Content = "hello driver"};
         }
 
+        [HttpPut, Route("api/UploadPosition")]
+        public ActionResult UploadPosition([ModelBinder(typeof(JsonBinder<UploadPositionRequest>))]UploadPositionRequest uploadPositionRequest)
+        {
+            try
+            {
+
+                return ApiResponse.OK();
+            }
+            catch (Exception)
+            {
+                return ApiResponse.UnknownError;
+                throw;
+            }
+        }
+
         public ActionResult Test()
         {
             return View();

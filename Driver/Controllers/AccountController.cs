@@ -46,14 +46,44 @@ namespace Driver.Controllers
             }
         }
 
-        [HttpGet, Route("api/SignIn/{base64}")]
-        public ActionResult SignIn(string base64)
+//        [HttpGet, Route("api/SignIn/{base64}")]
+//        public ActionResult SignIn(string base64)
+//        {
+//            try
+//            {
+//                if (string.IsNullOrEmpty(base64)) return ApiResponse.ParameterError;
+//                var json = base64.ToStr();
+//                var signInRequest = JsonConvert.DeserializeObject<SignInRequest>(json);
+//                var userData = DriverDBContext.Instance.Datas.SingleOrDefault(x => x.PhoneNumber == signInRequest.PhoneNumber);
+//                if (userData == null)
+//                {
+//                    return ApiResponse.UserNotExist;
+//                }
+//                var user = JsonConvert.DeserializeObject<User>(userData.Value);
+//                if (user.Password != signInRequest.Password)
+//                {
+//                    return ApiResponse.PasswordError;
+//                }
+//                var token = user.Id.ToString();
+//
+//                HttpRuntime.Cache.Add(token, token, null, DateTime.Now.AddDays(1), Cache.NoSlidingExpiration, CacheItemPriority.High, null);
+//
+//                Response.Headers.Add("X-Token", token);
+//                Response.Headers.Add("Access-Control-Expose-Headers", "X-Token");
+//
+//                return ApiResponse.OK(JsonConvert.SerializeObject(user.ToSignInResponse()));
+//            }
+//            catch (Exception ex)
+//            {
+//                return ApiResponse.UnknownError;
+//            }
+//        }
+
+        [HttpPost, Route("api/SignIn")]
+        public ActionResult SignIn([ModelBinder(typeof(JsonBinder<SignInRequest>))]SignInRequest signInRequest)
         {
             try
             {
-                if (string.IsNullOrEmpty(base64)) return ApiResponse.ParameterError;
-                var json = base64.ToStr();
-                var signInRequest = JsonConvert.DeserializeObject<SignInRequest>(json);
                 var userData = DriverDBContext.Instance.Datas.SingleOrDefault(x => x.PhoneNumber == signInRequest.PhoneNumber);
                 if (userData == null)
                 {
