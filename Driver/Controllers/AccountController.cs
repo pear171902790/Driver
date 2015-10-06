@@ -84,7 +84,7 @@ namespace Driver.Controllers
         {
             try
             {
-                var userData = DriverDBContext.Instance.Datas.SingleOrDefault(x => x.PhoneNumber == signInRequest.PhoneNumber);
+                var userData = DriverDBContext.Instance.Datas.SingleOrDefault(x => x.PhoneNumber == signInRequest.PhoneNumber&&x.Type==(int)DataType.User);
                 if (userData == null)
                 {
                     return ApiResponse.UserNotExist;
