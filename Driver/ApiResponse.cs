@@ -52,5 +52,10 @@ namespace Driver
         {
             get { return new JsonResult() { Data = new ApiResponse("205", "²ÎÊı´íÎó", string.Empty), JsonRequestBehavior = JsonRequestBehavior.AllowGet }; }
         }
+
+        public static JsonResult OldPasswordError
+        {
+            get { return new JsonResult() { Data = new ApiResponse("206", "¾ÉÃÜÂë´íÎó", string.Empty), JsonRequestBehavior = JsonRequestBehavior.AllowGet }; }
+        }
     }
 }

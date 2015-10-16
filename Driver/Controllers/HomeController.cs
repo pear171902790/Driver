@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Web;
 using System.Web.Http.Controllers;
 using System.Web.Mvc;
+using Driver.Models;
 using Newtonsoft.Json;
 
 namespace Driver.Controllers
@@ -79,6 +81,64 @@ namespace Driver.Controllers
                 };
 
                 return ApiResponse.OK(JsonConvert.SerializeObject(result));
+            }
+            catch (Exception)
+            {
+                return ApiResponse.UnknownError;
+            }
+        }
+
+        [HttpPost, Route("api/ChangePassword")]
+        public ActionResult ChangePassword([ModelBinder(typeof(JsonBinder<ChangePasswordRequest>))]ChangePasswordRequest changePasswordRequest)
+        {
+            try
+            {
+                var token = Request.Headers["Authorization"];
+                var guid = new Guid(token);
+                var userData = DriverDBContext.Instance.Datas.SingleOrDefault(x => x.Key == guid);
+                if (userData == null)
+                {
+                    return ApiResponse.UserNotExist;
+                }
+
+                var user = JsonConvert.DeserializeObject<User>(userData.Value);
+                if (user.Password != changePasswordRequest.OldPassword)
+                {
+                    return ApiResponse.OldPasswordError;
+                }
+                user.Password = changePasswordRequest.NewPassword;
+                userData.Value = JsonConvert.SerializeObject(user);
+                DriverDBContext.Instance.Datas.AddOrUpdate(userData);
+                DriverDBContext.Instance.SaveChanges();
+                return ApiResponse.OK();
+            }
+            catch (Exception)
+            {
+                return ApiResponse.UnknownError;
+            }
+        }
+
+        [HttpPost, Route("api/UpdateUserInfo")]
+        public ActionResult UpdateUserInfo([ModelBinder(typeof(JsonBinder<UpdateUserInfoRequest>))]UpdateUserInfoRequest updateUserInfoRequest)
+        {
+            try
+            {
+                var token = Request.Headers["Authorization"];
+                var guid = new Guid(token);
+                var userData = DriverDBContext.Instance.Datas.SingleOrDefault(x => x.Key == guid);
+                if (userData == null)
+                {
+                    return ApiResponse.UserNotExist;
+                }
+
+                var user = JsonConvert.DeserializeObject<User>(userData.Value);
+                user.CarNumber = updateUserInfoRequest.CarNumber;
+                user.CarType = updateUserInfoRequest.CarType;
+                user.PhoneNumber = updateUserInfoRequest.PhoneNumber;
+                userData.Value = JsonConvert.SerializeObject(user);
+                DriverDBContext.Instance.Datas.AddOrUpdate(userData);
+                DriverDBContext.Instance.SaveChanges();
+                return ApiResponse.OK();
             }
             catch (Exception)
             {
