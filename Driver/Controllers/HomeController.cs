@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity.Migrations;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Http.Controllers;
 using System.Web.Mvc;
@@ -146,9 +148,77 @@ namespace Driver.Controllers
             }
         }
 
+
+        [HttpGet, Route("api/version")]
+        public ActionResult GetVersion()
+        {
+            try
+            {
+                var dirinfo = new DirectoryInfo(GetApkFolderPath());
+                var files = dirinfo.GetFiles();
+                Array.Sort<FileInfo>(files, new FIleLastTimeComparer());
+                var latestApk = files[0];
+                var version = latestApk.Name.Replace("SpecialTA", String.Empty);
+                var result= new GetVersionResponse()
+                {
+                    VersionNumber = version,
+                    DownloadUrl = "http://114.215.157.116/api/apk/" + version
+                };
+                return ApiResponse.OK(JsonConvert.SerializeObject(result));
+            }
+            catch (Exception)
+            {
+                return ApiResponse.UnknownError;
+            }
+        }
+
+        [HttpGet, Route("api/apk/{version}")]
+        public ActionResult GetApk(string version)
+        {
+            try
+            {
+                var path = GetApkFolderPath() + @"\SpecialTA\" + version;
+                return !System.IO.File.Exists(path) ? ApiResponse.FileNotExists : File(path, "application/x-zip-compressed");
+            }
+            catch (Exception)
+            {
+                return ApiResponse.UnknownError;
+            }
+        }
+
         public ActionResult Test()
         {
             return View();
+        }
+
+        private string GetRootPath()
+        {
+            string AppPath = "";
+            HttpContext HttpCurrent = System.Web.HttpContext.Current;
+            if (HttpCurrent != null)
+            {
+                AppPath = HttpCurrent.Server.MapPath("~");
+            }
+            else
+            {
+                AppPath = AppDomain.CurrentDomain.BaseDirectory;
+                if (Regex.Match(AppPath, @"\\$", RegexOptions.Compiled).Success)
+                    AppPath = AppPath.Substring(0, AppPath.Length - 1);
+            }
+            return AppPath;
+        }
+
+        private string GetApkFolderPath()
+        {
+            return GetRootPath() + @"\APK";
+        }
+        public class FIleLastTimeComparer : IComparer<FileInfo>
+        {
+            public int Compare(FileInfo x, FileInfo y)
+            {
+                return y.LastWriteTime.CompareTo(x.LastWriteTime);//递减
+                //return x.LastWriteTime.CompareTo(y.LastWriteTime);//递增
+            }
         }
     }
 }

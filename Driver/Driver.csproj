@@ -209,6 +209,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="APK\" />
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>

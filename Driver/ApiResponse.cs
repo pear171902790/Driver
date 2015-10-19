@@ -57,5 +57,10 @@ namespace Driver
         {
             get { return new JsonResult() { Data = new ApiResponse("206", "旧密码错误", string.Empty), JsonRequestBehavior = JsonRequestBehavior.AllowGet }; }
         }
+
+        public static ActionResult FileNotExists
+        {
+            get { return new JsonResult() { Data = new ApiResponse("207", "文件不存在", string.Empty), JsonRequestBehavior = JsonRequestBehavior.AllowGet }; }
+        }
     }
 }
