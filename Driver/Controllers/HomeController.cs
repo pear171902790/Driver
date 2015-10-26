@@ -24,7 +24,7 @@ namespace Driver.Controllers
         {
             try
             {
-                var token = Request.Headers["Authorization"];
+                var token = Request.Headers["Token"];
                 var guid = new Guid(token);
                 var userData = DriverDBContext.Instance.Datas.SingleOrDefault(x => x.Key == guid);
                 if (userData == null)
@@ -56,7 +56,7 @@ namespace Driver.Controllers
         {
             try
             {
-                var token = Request.Headers["Authorization"];
+                var token = Request.Headers["Token"];
                 var guid = new Guid(token);
                 var userData = DriverDBContext.Instance.Datas.SingleOrDefault(x => x.Key == guid);
                 if (userData == null)
@@ -95,7 +95,7 @@ namespace Driver.Controllers
         {
             try
             {
-                var token = Request.Headers["Authorization"];
+                var token = Request.Headers["Token"];
                 var guid = new Guid(token);
                 var userData = DriverDBContext.Instance.Datas.SingleOrDefault(x => x.Key == guid);
                 if (userData == null)
@@ -125,7 +125,7 @@ namespace Driver.Controllers
         {
             try
             {
-                var token = Request.Headers["Authorization"];
+                var token = Request.Headers["Token"];
                 var guid = new Guid(token);
                 var userData = DriverDBContext.Instance.Datas.SingleOrDefault(x => x.Key == guid);
                 if (userData == null)
@@ -157,12 +157,11 @@ namespace Driver.Controllers
                 var dirinfo = new DirectoryInfo(GetApkFolderPath());
                 var files = dirinfo.GetFiles();
                 Array.Sort<FileInfo>(files, new FIleLastTimeComparer());
-                var latestApk = files[0];
-                var version = latestApk.Name.Replace("SpecialTA", String.Empty);
+                var fileName = files[0].Name;
                 var result= new GetVersionResponse()
                 {
-                    VersionNumber = version,
-                    DownloadUrl = "http://114.215.157.116/api/apk/" + version
+                    LatestVersion = fileName,
+                    DownloadUrl = "http://114.215.157.116/APK/" + fileName
                 };
                 return ApiResponse.OK(JsonConvert.SerializeObject(result));
             }
@@ -172,19 +171,7 @@ namespace Driver.Controllers
             }
         }
 
-        [HttpGet, Route("api/apk/{version}")]
-        public ActionResult GetApk(string version)
-        {
-            try
-            {
-                var path = GetApkFolderPath() + @"\SpecialTA\" + version;
-                return !System.IO.File.Exists(path) ? ApiResponse.FileNotExists : File(path, "application/x-zip-compressed");
-            }
-            catch (Exception)
-            {
-                return ApiResponse.UnknownError;
-            }
-        }
+        
 
         public ActionResult Test()
         {

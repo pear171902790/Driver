@@ -117,7 +117,7 @@ namespace Driver
     //回应类型 
     public class GetVersionResponse
     {
-        public string VersionNumber { get; set; }
+        public string LatestVersion { get; set; }
         public string DownloadUrl { get; set; }
     }
 

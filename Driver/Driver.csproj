@@ -176,6 +176,7 @@
     <Content Include="Content\Site.css" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="APK\SpecialTA1.0.0.apk" />
     <None Include="Properties\PublishProfiles\driver_version_1.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
@@ -209,7 +210,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="APK\" />
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
