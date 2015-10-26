@@ -13,6 +13,8 @@ namespace Driver
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
+            routes.IgnoreRoute("{resource}.apk");
+
             routes.MapMvcAttributeRoutes();
 
             routes.MapRoute(
