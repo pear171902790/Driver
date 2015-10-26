@@ -1,7 +1,10 @@
-Driver.startup.suo
-Driver.v12.suo
-Driver/bin/Driver.dll
-Driver/bin/Driver.dll.config
-Driver/bin/Driver.pdb
-Driver/obj/Debug/Driver.dll
-Driver/obj/Debug/Driver.pdb
+*.suo
+
+*.dll
+
+*.config
+
+*.pdb
+
+*.Cache
+

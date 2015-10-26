@@ -71,11 +71,15 @@ namespace Driver
     //返回类型
     public class GetPositionsResponse
     {
+        public int Count
+        {
+            get { return Positions.Count; }
+        }
+
         public List<Position> Positions { get; set; }
 
         public class Position
         {
-            public string Voice { get; set; }
             public string Longitude { get; set; }
             public string Latitude { get; set; }
             public string Address { get; set; }
