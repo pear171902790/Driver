@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Http.Controllers;
 using System.Web.Mvc;
 using Driver.Models;
+using log4net;
 using Newtonsoft.Json;
 
 namespace Driver.Controllers
@@ -31,6 +33,7 @@ namespace Driver.Controllers
                 {
                     return ApiResponse.UserNotExist;
                 }
+                uploadPositionRequest.Address = HttpUtility.UrlDecode(uploadPositionRequest.Address, Encoding.UTF8);
                 var positionData = new Data()
                 {
                     Key = Guid.NewGuid(),
@@ -44,8 +47,10 @@ namespace Driver.Controllers
                 DriverDBContext.Instance.SaveChanges();
                 return ApiResponse.OK();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                var logger = LogManager.GetLogger(typeof(HttpRequest));
+                logger.Error("------------------------api/UploadPosition error-------------------------------\r\n" + ex.Message);
                 return ApiResponse.UnknownError;
             }
         }
@@ -84,8 +89,10 @@ namespace Driver.Controllers
 
                 return ApiResponse.OK(JsonConvert.SerializeObject(result));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                var logger = LogManager.GetLogger(typeof(HttpRequest));
+                logger.Error("------------------------api/Positions error-------------------------------\r\n"+ex.Message);
                 return ApiResponse.UnknownError;
             }
         }
@@ -114,8 +121,10 @@ namespace Driver.Controllers
                 DriverDBContext.Instance.SaveChanges();
                 return ApiResponse.OK();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                var logger = LogManager.GetLogger(typeof(HttpRequest));
+                logger.Error("------------------------api/ChangePassword error-------------------------------\r\n" + ex.Message);
                 return ApiResponse.UnknownError;
             }
         }
@@ -142,8 +151,10 @@ namespace Driver.Controllers
                 DriverDBContext.Instance.SaveChanges();
                 return ApiResponse.OK();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                var logger = LogManager.GetLogger(typeof(HttpRequest));
+                logger.Error("------------------------api/UpdateUserInfo error-------------------------------\r\n" + ex.Message);
                 return ApiResponse.UnknownError;
             }
         }
@@ -175,6 +186,10 @@ namespace Driver.Controllers
 
         public ActionResult Test()
         {
+            var str =
+                "%E9%99%95%E8%A5%BF%E7%9C%81%E8%A5%BF%E5%AE%89%E5%B8%82%E9%9B%81%E5%A1%94%E5%8C%BA%E5%A4%A7%E5%AF%A8%E8%B7%AF";
+
+            var a = HttpUtility.UrlDecode(str, Encoding.UTF8);
             return View();
         }
 
