@@ -34,6 +34,17 @@ namespace Driver.Controllers
                     return ApiResponse.UserNotExist;
                 }
                 uploadPositionRequest.Address = HttpUtility.UrlDecode(uploadPositionRequest.Address, Encoding.UTF8);
+                if (!string.IsNullOrEmpty(uploadPositionRequest.Voice))
+                {
+                    var bytes = Convert.FromBase64String(uploadPositionRequest.Voice);
+                    using (
+                        var fs = new FileStream(Server.MapPath("~/Voice/") + userData.Key + "_" + CurrentTime + ".mp3",
+                            FileMode.Create))
+                    {
+                        fs.Write(bytes, 0, bytes.Length);
+                        fs.Close();
+                    }
+                }
                 var positionData = new Data()
                 {
                     Key = Guid.NewGuid(),
@@ -182,6 +193,34 @@ namespace Driver.Controllers
             }
         }
 
+        [HttpPost, Route("api/share")]
+        public ActionResult Share([ModelBinder(typeof(JsonBinder<ShareRequest>))]ShareRequest shareRequest)
+        {
+            try
+            {
+                var token = Request.Headers["Token"];
+                var guid = new Guid(token);
+                var userData = DriverDBContext.Instance.Datas.SingleOrDefault(x => x.Key == guid);
+                if (userData == null)
+                {
+                    return ApiResponse.UserNotExist;
+                }
+
+                var user = JsonConvert.DeserializeObject<User>(userData.Value);
+                user.Integral += 10;
+                userData.Value = JsonConvert.SerializeObject(user);
+                DriverDBContext.Instance.Datas.AddOrUpdate(userData);
+                DriverDBContext.Instance.SaveChanges();
+                return ApiResponse.OK();
+            }
+            catch (Exception ex)
+            {
+                var logger = LogManager.GetLogger(typeof(HttpRequest));
+                logger.Error("------------------------api/share error-------------------------------\r\n" + ex.Message);
+                return ApiResponse.UnknownError;
+            }
+        }
+
         
 
         public ActionResult Test()
@@ -220,6 +259,23 @@ namespace Driver.Controllers
             {
                 return y.LastWriteTime.CompareTo(x.LastWriteTime);//递减
                 //return x.LastWriteTime.CompareTo(y.LastWriteTime);//递增
+            }
+        }
+
+
+        public ActionResult Voice()
+        {
+            var vm = new VoiceViewModel() { Username = "zhnagsan", Source = "/Voice/777.mp3",UploadTime = "2015-7-23 15:30:30"};
+            return View(new List<VoiceViewModel>(){vm});
+        }
+
+        public string CurrentTime
+        {
+            get
+            {
+                var now = DateTime.Now;
+                return now.Year.ToString() + now.Month.ToString() + now.Day.ToString() + now.Hour.ToString() +
+                       now.Minute.ToString() + now.Second.ToString();
             }
         }
     }
