@@ -33,17 +33,19 @@ namespace Driver.Controllers
                 {
                     return ApiResponse.UserNotExist;
                 }
+                uploadPositionRequest.CarNumber = JsonConvert.DeserializeObject<User>(userData.Value).CarNumber;
                 uploadPositionRequest.Address = HttpUtility.UrlDecode(uploadPositionRequest.Address, Encoding.UTF8);
                 if (!string.IsNullOrEmpty(uploadPositionRequest.Voice))
                 {
                     var bytes = Convert.FromBase64String(uploadPositionRequest.Voice);
+                    var voiceName = userData.Key + "_" + CurrentTime + ".mp3";
                     using (
-                        var fs = new FileStream(Server.MapPath("~/Voice/") + userData.Key + "_" + CurrentTime + ".mp3",
-                            FileMode.Create))
+                        var fs = new FileStream(Server.MapPath("~/Voice/") + voiceName,FileMode.Create))
                     {
                         fs.Write(bytes, 0, bytes.Length);
                         fs.Close();
                     }
+                    uploadPositionRequest.Voice = voiceName;
                 }
                 var positionData = new Data()
                 {
@@ -265,8 +267,17 @@ namespace Driver.Controllers
 
         public ActionResult Voice()
         {
-            var vm = new VoiceViewModel() { Username = "zhnagsan", Source = "/Voice/777.mp3",UploadTime = "2015-7-23 15:30:30"};
-            return View(new List<VoiceViewModel>(){vm});
+            var datas =
+                     DriverDBContext.Instance.Datas.Where(
+                         x => x.CreateTime >= DateTime.Now.AddDays(-2) && x.Type == (int)DataType.Position).ToList();
+            var list = (from data in datas
+                        let position = JsonConvert.DeserializeObject<UploadPositionRequest>(data.Value)
+                        where !string.IsNullOrEmpty(position.Voice)
+                        select new VoiceViewModel()
+                            {
+                                CarNumber = position.CarNumber, Source = position.Voice, UploadTime = data.CreateTime.ToLongTimeString()
+                            }).ToList();
+            return View(list);
         }
 
         public string CurrentTime

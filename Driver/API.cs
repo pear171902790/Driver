@@ -57,6 +57,9 @@ namespace Driver
         public string Longitude { get; set; }
         public string Latitude { get; set; }
         public string Address { get; set; }
+        public string CarNumber { get; set; }
+
+        
     }
     //返回类型 bool
 

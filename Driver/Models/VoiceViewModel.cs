@@ -7,7 +7,7 @@ namespace Driver.Models
 {
     public class VoiceViewModel
     {
-        public string Username { get; set; }
+        public string CarNumber { get; set; }
         public string Source { get; set; }
 
         public string UploadTime { get; set; }

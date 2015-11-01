@@ -38,11 +38,11 @@
             {
                 <tr>
                     <td>
-                        @voice.Username
+                        @voice.CarNumber
                     </td>
                     <td>
                         <audio controls="controls">
-                            <source src="@Html.Raw(voice.Source)" type="audio/mpeg"/>
+                            <source src="/Voice/@(voice.Source)" type="audio/mpeg"/>
                         </audio>
                     </td>
                     <td>
