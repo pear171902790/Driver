@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Caching;
 using System.Web.Mvc;
@@ -16,7 +17,8 @@ namespace Driver.Controllers
             try
             {
                 if (signUpRequest == null) return ApiResponse.ParameterError;
-                var isPhoneNumber = System.Text.RegularExpressions.Regex.IsMatch(signUpRequest.PhoneNumber, @"^[1]+[3,5]+\d{9}");
+                Regex dReg = new Regex("[0-9]{11,11}");
+                var isPhoneNumber = dReg.IsMatch(signUpRequest.PhoneNumber.Trim());
                 if (!isPhoneNumber)
                 {
                     return ApiResponse.NotPhoneNumber;
@@ -77,6 +79,14 @@ namespace Driver.Controllers
             }
         }
 
+        [HttpGet,Route("api/SignOut")]
+        public ActionResult SignOut()
+        {
+            var token = Request.Headers["Token"];
+            if(!string.IsNullOrEmpty(token)) HttpRuntime.Cache.Remove(token);
+            return ApiResponse.OK("你需要重新登录");
+        }
+
         [HttpGet,Route("api/test")]
         public ActionResult Test()
         {
@@ -86,7 +96,6 @@ namespace Driver.Controllers
         public ActionResult Options()
         {
             return null; 
-
         }
     }
 }

@@ -11,10 +11,15 @@
 返回数据示例：{"Code":"200","ErrorMessage":"","Result":"{'UserId':'','PhoneNumber':'','CarType':'','CarNumber':'','Integral':''}"}
 注意返回的响应头里有一个“X-Token”(X-Token:"xxx"),需要在后续的请求中将这个token值带在请求头里(Token:"xxx")，否则视为没有登陆
 
+退出
+请求地址：http://114.215.157.116/api/SignOut
+请求方式：HttpGet
+返回数据示例：{"Code":"200","ErrorMessage":"","Result":"你需要重新登录"}
+
 上传位置
 请求地址：http://114.215.157.116/api/UploadPosition
 请求方式：HttpPost
-请求参数示例：{"Voice":"","Longitude":"","Latitude":"","Address":"","CarNumber":""}
+请求参数示例：{"Voice":"","Longitude":"","Latitude":"","Address":""}
 返回数据示例：{"Code":"200","ErrorMessage":"","Result":"Success"}
 
 获取位置
@@ -32,7 +37,7 @@
 请求地址：http://114.215.157.116/api/ChangePassword
 请求方式：HttpPost
 请求参数示例：{"OldPassword":"","NewPassword":""}
-返回数据示例：{"Code":"200","ErrorMessage":"","Result":"Success"}
+返回数据示例：{"Code":"200","ErrorMessage":"","Result":"你需要重新登录"}
 
 获取最新版本信息
 请求地址：http://114.215.157.116/api/version
@@ -66,4 +71,6 @@
     ("206", "旧密码错误")
     
     ("207", "文件不存在")
+
+	("208", "没有登录")
     

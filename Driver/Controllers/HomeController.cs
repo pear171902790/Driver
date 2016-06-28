@@ -21,20 +21,30 @@ namespace Driver.Controllers
             return new ContentResult() { Content = "hello driver" };
         }
 
+        private bool CheckToken(string token)
+        {
+            return (!string.IsNullOrEmpty(token))&&(HttpRuntime.Cache.Get(token) != null);
+        }
+
         [HttpPost, Route("api/UploadPosition")]
         public ActionResult UploadPosition([ModelBinder(typeof(JsonBinder<UploadPositionRequest>))]UploadPositionRequest uploadPositionRequest)
         {
             try
             {
                 var token = Request.Headers["Token"];
+                if (!CheckToken(token)) return ApiResponse.NotSignIn;
                 var guid = new Guid(token);
                 var userData = DriverDBContext.Instance.Datas.SingleOrDefault(x => x.Key == guid);
                 if (userData == null)
                 {
                     return ApiResponse.UserNotExist;
                 }
-                uploadPositionRequest.CarNumber = JsonConvert.DeserializeObject<User>(userData.Value).CarNumber;
-                uploadPositionRequest.Address = HttpUtility.UrlDecode(uploadPositionRequest.Address, Encoding.UTF8);
+                var user = JsonConvert.DeserializeObject<User>(userData.Value);
+                var postion = new Position();
+                postion.UploadBy = user.Id;
+                postion.UploaderPhoneNumber = user.PhoneNumber;
+                postion.UploaderCarNumber = user.CarNumber;
+                postion.Address = HttpUtility.UrlDecode(uploadPositionRequest.Address, Encoding.UTF8);
                 if (!string.IsNullOrEmpty(uploadPositionRequest.Voice))
                 {
                     var bytes = Convert.FromBase64String(uploadPositionRequest.Voice);
@@ -45,7 +55,7 @@ namespace Driver.Controllers
                         fs.Write(bytes, 0, bytes.Length);
                         fs.Close();
                     }
-                    uploadPositionRequest.Voice = voiceName;
+                    postion.Voice = voiceName;
                 }
                 var positionData = new Data()
                 {
@@ -54,7 +64,7 @@ namespace Driver.Controllers
                     CreateTime = DateTime.Now,
                     Type = (int)DataType.Position,
                     Valid = true,
-                    Value = JsonConvert.SerializeObject(uploadPositionRequest)
+                    Value = JsonConvert.SerializeObject(postion)
                 };
                 DriverDBContext.Instance.Datas.Add(positionData);
                 DriverDBContext.Instance.SaveChanges();
@@ -69,12 +79,15 @@ namespace Driver.Controllers
         }
 
 
+       
+
         [HttpGet, Route("api/Positions")]
         public ActionResult GetPositions()
         {
             try
             {
                 var token = Request.Headers["Token"];
+                if (!CheckToken(token)) return ApiResponse.NotSignIn;
                 var guid = new Guid(token);
                 var userData = DriverDBContext.Instance.Datas.SingleOrDefault(x => x.Key == guid);
                 if (userData == null)
@@ -83,15 +96,14 @@ namespace Driver.Controllers
                 }
                 var now = DateTime.Now;
                 var begin = new DateTime(now.Year, now.Month, now.Day, 3, 0, 0);
-                var end = new DateTime(now.Year, now.Month, now.AddDays(1).Day, 2, 59, 59);
+//                var end = new DateTime(now.Year, now.Month, now.AddDays(1).Day, 2, 59, 59);
                 var data =
                     DriverDBContext.Instance.Datas.Where(
-                        x => x.CreateTime >= begin && x.CreateTime <= end && x.Type == (int)DataType.Position).ToList();
+                        x => x.CreateTime >= begin && x.CreateTime <= now && x.Type == (int)DataType.Position).ToList();
                 var positions = data.Select(x =>
                 {
-
                     var position =
-                        JsonConvert.DeserializeObject<UploadPositionRequest>(x.Value);
+                        JsonConvert.DeserializeObject<Position>(x.Value);
                     return new GetPositionsResponse.Position() { Latitude = position.Latitude, Longitude = position.Longitude, Address = position.Address };
                 }).ToList();
 
@@ -116,6 +128,7 @@ namespace Driver.Controllers
             try
             {
                 var token = Request.Headers["Token"];
+                if (!CheckToken(token)) return ApiResponse.NotSignIn;
                 var guid = new Guid(token);
                 var userData = DriverDBContext.Instance.Datas.SingleOrDefault(x => x.Key == guid);
                 if (userData == null)
@@ -132,7 +145,8 @@ namespace Driver.Controllers
                 userData.Value = JsonConvert.SerializeObject(user);
                 DriverDBContext.Instance.Datas.AddOrUpdate(userData);
                 DriverDBContext.Instance.SaveChanges();
-                return ApiResponse.OK();
+                HttpRuntime.Cache.Remove(token);
+                return ApiResponse.OK("你需要重新登录");
             }
             catch (Exception ex)
             {
@@ -148,6 +162,7 @@ namespace Driver.Controllers
             try
             {
                 var token = Request.Headers["Token"];
+                if (!CheckToken(token)) return ApiResponse.NotSignIn;
                 var guid = new Guid(token);
                 var userData = DriverDBContext.Instance.Datas.SingleOrDefault(x => x.Key == guid);
                 if (userData == null)
@@ -201,6 +216,7 @@ namespace Driver.Controllers
             try
             {
                 var token = Request.Headers["Token"];
+                if (!CheckToken(token)) return ApiResponse.NotSignIn;
                 var guid = new Guid(token);
                 var userData = DriverDBContext.Instance.Datas.SingleOrDefault(x => x.Key == guid);
                 if (userData == null)
@@ -271,11 +287,11 @@ namespace Driver.Controllers
                      DriverDBContext.Instance.Datas.Where(
                          x => x.CreateTime >= DateTime.Now.AddDays(-2) && x.Type == (int)DataType.Position).ToList();
             var list = (from data in datas
-                        let position = JsonConvert.DeserializeObject<UploadPositionRequest>(data.Value)
+                        let position = JsonConvert.DeserializeObject<Position>(data.Value)
                         where !string.IsNullOrEmpty(position.Voice)
                         select new VoiceViewModel()
                             {
-                                CarNumber = position.CarNumber, Source = position.Voice, UploadTime = data.CreateTime.ToLongTimeString()
+                                CarNumber = position.UploaderCarNumber, Source = position.Voice, UploadTime = data.CreateTime.ToLongTimeString()
                             }).ToList();
             return View(list);
         }

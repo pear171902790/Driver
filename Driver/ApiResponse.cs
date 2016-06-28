@@ -62,5 +62,10 @@ namespace Driver
         {
             get { return new JsonResult() { Data = new ApiResponse("207", "文件不存在", string.Empty), JsonRequestBehavior = JsonRequestBehavior.AllowGet }; }
         }
+
+        public static ActionResult NotSignIn
+        {
+            get { return new JsonResult() { Data = new ApiResponse("208", "没有登录", string.Empty), JsonRequestBehavior = JsonRequestBehavior.AllowGet }; }
+        }
     }
 }
