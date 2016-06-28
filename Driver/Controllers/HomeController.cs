@@ -21,7 +21,7 @@ namespace Driver.Controllers
             return new ContentResult() { Content = "hello driver" };
         }
 
-        [HttpPut, Route("api/UploadPosition")]
+        [HttpPost, Route("api/UploadPosition")]
         public ActionResult UploadPosition([ModelBinder(typeof(JsonBinder<UploadPositionRequest>))]UploadPositionRequest uploadPositionRequest)
         {
             try

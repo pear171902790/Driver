@@ -10,7 +10,7 @@ namespace Driver.Controllers
 {
     public class AccountController : Controller
     {
-        [HttpPut, Route("api/SignUp")]
+        [HttpPost, Route("api/SignUp")]
         public ActionResult SignUp([ModelBinder(typeof(JsonBinder<SignUpRequest>))]SignUpRequest signUpRequest)
         {
             try

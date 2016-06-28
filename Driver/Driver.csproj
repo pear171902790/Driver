@@ -20,6 +20,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -191,6 +192,7 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
+    <Content Include="TextFile1.txt" />
     <Content Include="Voice\777.mp3" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -211,6 +213,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\Home\Voice.cshtml" />
+    <Content Include="Web API 说明.doc" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
