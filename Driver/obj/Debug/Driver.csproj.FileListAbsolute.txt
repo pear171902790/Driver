@@ -199,7 +199,5 @@ D:\Projects\Driver\Driver\bin\EntityFramework.SqlServer.xml
 D:\Projects\Driver\Driver\bin\Microsoft.AspNet.Identity.Core.xml
 D:\Projects\Driver\Driver\bin\Microsoft.AspNet.Identity.Owin.xml
 D:\Projects\Driver\Driver\bin\Microsoft.AspNet.Identity.EntityFramework.xml
-D:\Projects\Driver\Driver\obj\Debug\Driver.Migrations.first.resources
-D:\Projects\Driver\Driver\obj\Debug\Driver.csproj.GenerateResource.Cache
 D:\Projects\Driver\Driver\obj\Debug\Driver.dll
 D:\Projects\Driver\Driver\obj\Debug\Driver.pdb

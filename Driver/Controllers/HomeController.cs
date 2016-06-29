@@ -23,7 +23,7 @@ namespace Driver.Controllers
 
         private bool CheckToken(string token)
         {
-            return (!string.IsNullOrEmpty(token))&&(HttpRuntime.Cache.Get(token) != null);
+            return (!string.IsNullOrEmpty(token)) && (HttpRuntime.Cache.Get(token) != null);
         }
 
         [HttpPost, Route("api/UploadPosition")]
@@ -34,41 +34,35 @@ namespace Driver.Controllers
                 var token = Request.Headers["Token"];
                 if (!CheckToken(token)) return ApiResponse.NotSignIn;
                 var guid = new Guid(token);
-                var userData = DriverDBContext.Instance.Datas.SingleOrDefault(x => x.Key == guid);
-                if (userData == null)
+                using (var context = new DriverDBContext())
                 {
-                    return ApiResponse.UserNotExist;
-                }
-                var user = JsonConvert.DeserializeObject<User>(userData.Value);
-                var postion = new Position();
-                postion.UploadBy = user.Id;
-                postion.UploaderPhoneNumber = user.PhoneNumber;
-                postion.UploaderCarNumber = user.CarNumber;
-                postion.Address = HttpUtility.UrlDecode(uploadPositionRequest.Address, Encoding.UTF8);
-                if (!string.IsNullOrEmpty(uploadPositionRequest.Voice))
-                {
-                    var bytes = Convert.FromBase64String(uploadPositionRequest.Voice);
-                    var voiceName = userData.Key + "_" + CurrentTime + ".mp3";
-                    using (
-                        var fs = new FileStream(Server.MapPath("~/Voice/") + voiceName,FileMode.Create))
+                    var user = context.Users.SingleOrDefault(x => x.Id == guid);
+                    if (user == null)
                     {
-                        fs.Write(bytes, 0, bytes.Length);
-                        fs.Close();
+                        return ApiResponse.UserNotExist;
                     }
-                    postion.Voice = voiceName;
+                    var postion = new Position() { Id = Guid.NewGuid() };
+                    postion.UploadBy = user.Id;
+                    postion.Address = HttpUtility.UrlDecode(uploadPositionRequest.Address, Encoding.UTF8);
+                    postion.Latitude = uploadPositionRequest.Latitude;
+                    postion.Longitude = uploadPositionRequest.Longitude;
+                    postion.UploadTime = DateTime.Now;
+                    if (!string.IsNullOrEmpty(uploadPositionRequest.Voice))
+                    {
+                        var bytes = Convert.FromBase64String(uploadPositionRequest.Voice);
+                        var voiceName = user.Id + "_" + CurrentTime + ".mp3";
+                        using (
+                            var fs = new FileStream(Server.MapPath("~/Voice/") + voiceName, FileMode.Create))
+                        {
+                            fs.Write(bytes, 0, bytes.Length);
+                            fs.Close();
+                        }
+                        postion.Voice = voiceName;
+                    }
+                    context.Positions.Add(postion);
+                    context.SaveChanges();
+                    return ApiResponse.OK();
                 }
-                var positionData = new Data()
-                {
-                    Key = Guid.NewGuid(),
-                    PhoneNumber = userData.PhoneNumber,
-                    CreateTime = DateTime.Now,
-                    Type = (int)DataType.Position,
-                    Valid = true,
-                    Value = JsonConvert.SerializeObject(postion)
-                };
-                DriverDBContext.Instance.Datas.Add(positionData);
-                DriverDBContext.Instance.SaveChanges();
-                return ApiResponse.OK();
             }
             catch (Exception ex)
             {
@@ -79,7 +73,7 @@ namespace Driver.Controllers
         }
 
 
-       
+
 
         [HttpGet, Route("api/Positions")]
         public ActionResult GetPositions()
@@ -89,35 +83,41 @@ namespace Driver.Controllers
                 var token = Request.Headers["Token"];
                 if (!CheckToken(token)) return ApiResponse.NotSignIn;
                 var guid = new Guid(token);
-                var userData = DriverDBContext.Instance.Datas.SingleOrDefault(x => x.Key == guid);
-                if (userData == null)
+                using (var context = new DriverDBContext())
                 {
-                    return ApiResponse.UserNotExist;
+                    var user = context.Users.SingleOrDefault(x => x.Id == guid);
+                    if (user == null)
+                    {
+                        return ApiResponse.UserNotExist;
+                    }
+                    var now = DateTime.Now;
+                    var begin = new DateTime(now.Year, now.Month, now.Day, 3, 0, 0);
+                    //                var end = new DateTime(now.Year, now.Month, now.AddDays(1).Day, 2, 59, 59);
+                    var data =
+                        context.Positions.Where(
+                            x => x.UploadTime >= begin && x.UploadTime <= now).ToList();
+                    var positions =
+                        data.Select(
+                            x =>
+                                new GetPositionsResponse.Position()
+                                {
+                                    Latitude = x.Latitude,
+                                    Longitude = x.Longitude,
+                                    Address = x.Address
+                                }).ToList();
+
+                    var result = new GetPositionsResponse()
+                    {
+                        Positions = positions
+                    };
+
+                    return ApiResponse.OK(JsonConvert.SerializeObject(result));
                 }
-                var now = DateTime.Now;
-                var begin = new DateTime(now.Year, now.Month, now.Day, 3, 0, 0);
-//                var end = new DateTime(now.Year, now.Month, now.AddDays(1).Day, 2, 59, 59);
-                var data =
-                    DriverDBContext.Instance.Datas.Where(
-                        x => x.CreateTime >= begin && x.CreateTime <= now && x.Type == (int)DataType.Position).ToList();
-                var positions = data.Select(x =>
-                {
-                    var position =
-                        JsonConvert.DeserializeObject<Position>(x.Value);
-                    return new GetPositionsResponse.Position() { Latitude = position.Latitude, Longitude = position.Longitude, Address = position.Address };
-                }).ToList();
-
-                var result = new GetPositionsResponse()
-                {
-                    Positions = positions
-                };
-
-                return ApiResponse.OK(JsonConvert.SerializeObject(result));
             }
             catch (Exception ex)
             {
                 var logger = LogManager.GetLogger(typeof(HttpRequest));
-                logger.Error("------------------------api/Positions error-------------------------------\r\n"+ex.Message);
+                logger.Error("------------------------api/Positions error-------------------------------\r\n" + ex.Message);
                 return ApiResponse.UnknownError;
             }
         }
@@ -130,23 +130,24 @@ namespace Driver.Controllers
                 var token = Request.Headers["Token"];
                 if (!CheckToken(token)) return ApiResponse.NotSignIn;
                 var guid = new Guid(token);
-                var userData = DriverDBContext.Instance.Datas.SingleOrDefault(x => x.Key == guid);
-                if (userData == null)
+                using (var context = new DriverDBContext())
                 {
-                    return ApiResponse.UserNotExist;
-                }
+                    var user = context.Users.SingleOrDefault(x => x.Id == guid);
+                    if (user == null)
+                    {
+                        return ApiResponse.UserNotExist;
+                    }
 
-                var user = JsonConvert.DeserializeObject<User>(userData.Value);
-                if (user.Password != changePasswordRequest.OldPassword)
-                {
-                    return ApiResponse.OldPasswordError;
+                    if (user.Password != changePasswordRequest.OldPassword)
+                    {
+                        return ApiResponse.OldPasswordError;
+                    }
+                    user.Password = changePasswordRequest.NewPassword;
+                    context.Users.AddOrUpdate(user);
+                    context.SaveChanges();
+                    HttpRuntime.Cache.Remove(token);
+                    return ApiResponse.OK("你需要重新登录");
                 }
-                user.Password = changePasswordRequest.NewPassword;
-                userData.Value = JsonConvert.SerializeObject(user);
-                DriverDBContext.Instance.Datas.AddOrUpdate(userData);
-                DriverDBContext.Instance.SaveChanges();
-                HttpRuntime.Cache.Remove(token);
-                return ApiResponse.OK("你需要重新登录");
             }
             catch (Exception ex)
             {
@@ -164,20 +165,20 @@ namespace Driver.Controllers
                 var token = Request.Headers["Token"];
                 if (!CheckToken(token)) return ApiResponse.NotSignIn;
                 var guid = new Guid(token);
-                var userData = DriverDBContext.Instance.Datas.SingleOrDefault(x => x.Key == guid);
-                if (userData == null)
+                using (var context = new DriverDBContext())
                 {
-                    return ApiResponse.UserNotExist;
+                    var user = context.Users.SingleOrDefault(x => x.Id == guid);
+                    if (user == null)
+                    {
+                        return ApiResponse.UserNotExist;
+                    }
+                    user.CarNumber = updateUserInfoRequest.CarNumber;
+                    user.CarType = updateUserInfoRequest.CarType;
+                    user.PhoneNumber = updateUserInfoRequest.PhoneNumber;
+                    context.Users.AddOrUpdate(user);
+                    context.SaveChanges();
+                    return ApiResponse.OK();
                 }
-
-                var user = JsonConvert.DeserializeObject<User>(userData.Value);
-                user.CarNumber = updateUserInfoRequest.CarNumber;
-                user.CarType = updateUserInfoRequest.CarType;
-                user.PhoneNumber = updateUserInfoRequest.PhoneNumber;
-                userData.Value = JsonConvert.SerializeObject(user);
-                DriverDBContext.Instance.Datas.AddOrUpdate(userData);
-                DriverDBContext.Instance.SaveChanges();
-                return ApiResponse.OK();
             }
             catch (Exception ex)
             {
@@ -197,7 +198,7 @@ namespace Driver.Controllers
                 var files = dirinfo.GetFiles();
                 Array.Sort<FileInfo>(files, new FIleLastTimeComparer());
                 var fileName = files[0].Name;
-                var result= new GetVersionResponse()
+                var result = new GetVersionResponse()
                 {
                     LatestVersion = fileName,
                     DownloadUrl = "http://114.215.157.116/APK/" + fileName
@@ -218,18 +219,18 @@ namespace Driver.Controllers
                 var token = Request.Headers["Token"];
                 if (!CheckToken(token)) return ApiResponse.NotSignIn;
                 var guid = new Guid(token);
-                var userData = DriverDBContext.Instance.Datas.SingleOrDefault(x => x.Key == guid);
-                if (userData == null)
+                using (var context = new DriverDBContext())
                 {
-                    return ApiResponse.UserNotExist;
+                    var user = context.Users.SingleOrDefault(x => x.Id == guid);
+                    if (user == null)
+                    {
+                        return ApiResponse.UserNotExist;
+                    }
+                    user.Integral += 10;
+                    context.Users.AddOrUpdate(user);
+                    context.SaveChanges();
+                    return ApiResponse.OK();
                 }
-
-                var user = JsonConvert.DeserializeObject<User>(userData.Value);
-                user.Integral += 10;
-                userData.Value = JsonConvert.SerializeObject(user);
-                DriverDBContext.Instance.Datas.AddOrUpdate(userData);
-                DriverDBContext.Instance.SaveChanges();
-                return ApiResponse.OK();
             }
             catch (Exception ex)
             {
@@ -239,7 +240,7 @@ namespace Driver.Controllers
             }
         }
 
-        
+
 
         public ActionResult Test()
         {
@@ -283,16 +284,21 @@ namespace Driver.Controllers
 
         public ActionResult Voice()
         {
-            var datas =
-                     DriverDBContext.Instance.Datas.Where(
-                         x => x.CreateTime >= DateTime.Now.AddDays(-2) && x.Type == (int)DataType.Position).ToList();
-            var list = (from data in datas
-                        let position = JsonConvert.DeserializeObject<Position>(data.Value)
-                        where !string.IsNullOrEmpty(position.Voice)
+            List<VoiceViewModel> list;
+            using (var context = new DriverDBContext())
+            {
+                var positions = context.Positions;
+                var users = context.Users;
+                list = (from p in positions
+                        join u in users on p.UploadBy equals u.Id
+                        where (!string.IsNullOrEmpty(p.Voice)) && (p.UploadTime >= DateTime.Now.AddDays(-2))
                         select new VoiceViewModel()
-                            {
-                                CarNumber = position.UploaderCarNumber, Source = position.Voice, UploadTime = data.CreateTime.ToLongTimeString()
-                            }).ToList();
+                        {
+                            CarNumber = u.CarNumber,
+                            Source = p.Voice,
+                            UploadTime = p.UploadTime.ToLongTimeString()
+                        }).ToList();
+            }
             return View(list);
         }
 

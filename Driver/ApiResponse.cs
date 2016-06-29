@@ -67,5 +67,9 @@ namespace Driver
         {
             get { return new JsonResult() { Data = new ApiResponse("208", "没有登录", string.Empty), JsonRequestBehavior = JsonRequestBehavior.AllowGet }; }
         }
+        public static JsonResult CarNumberAlreadySignUp
+        {
+            get { return new JsonResult() { Data = new ApiResponse("209", "该车牌号已经被注册", string.Empty), JsonRequestBehavior = JsonRequestBehavior.AllowGet }; }
+        }
     }
 }

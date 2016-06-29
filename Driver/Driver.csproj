@@ -159,10 +159,6 @@
     </Compile>
     <Compile Include="JSONBinder.cs" />
     <Compile Include="LogExtensions.cs" />
-    <Compile Include="Migrations\201509160331018_first.cs" />
-    <Compile Include="Migrations\201509160331018_first.Designer.cs">
-      <DependentUpon>201509160331018_first.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Position.cs" />
     <Compile Include="Models\User.cs" />
@@ -224,11 +220,6 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201509160331018_first.resx">
-      <DependentUpon>201509160331018_first.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

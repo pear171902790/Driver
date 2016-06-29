@@ -1,19 +1,10 @@
-*.suo
-
-*.dll
-
-*.config
-
-*.pdb
-
-*.Cache
-
 
 #ignore thumbnails created by windows
 Thumbs.db
 #Ignore files build by Visual Studio
 *.obj
 *.exe
+*.pdb
 *.user
 *.aps
 *.pch
@@ -21,15 +12,13 @@ Thumbs.db
 *_i.c
 *_p.c
 *.ncb
+*.suo
 *.tlb
 *.tlh
 *.bak
 *.cache
 *.ilk
 *.log
-*.dll
-*.exe
-*.pdb
 [Bb]in
 [Dd]ebug*/
 *.lib

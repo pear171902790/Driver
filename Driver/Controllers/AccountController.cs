@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Caching;
 using System.Web.Mvc;
 using Driver.Models;
+using log4net;
 using Newtonsoft.Json;
 
 namespace Driver.Controllers
@@ -23,27 +24,39 @@ namespace Driver.Controllers
                 {
                     return ApiResponse.NotPhoneNumber;
                 }
-                var count = DriverDBContext.Instance.Datas.Count(x => x.PhoneNumber == signUpRequest.PhoneNumber);
-                if (count > 0)
+                using (var context = new DriverDBContext())
                 {
-                    return ApiResponse.PhoneNumberAlreadySignUp;
+                    var count = context.Users.Count(x => x.PhoneNumber == signUpRequest.PhoneNumber);
+                    if (count > 0)
+                    {
+                        return ApiResponse.PhoneNumberAlreadySignUp;
+                    }
+                    count = context.Users.Count(x => x.CarNumber == signUpRequest.CarNumber);
+                    if (count > 0)
+                    {
+                        return ApiResponse.CarNumberAlreadySignUp;
+                    }
+                    var guid = Guid.NewGuid();
+                    var data = new User()
+                    {
+                        Id = guid,
+                        RegsiterTime = DateTime.Now,
+                        PhoneNumber = signUpRequest.PhoneNumber,
+                        CarNumber = signUpRequest.CarNumber,
+                        CarType = signUpRequest.CarType,
+                        Password = signUpRequest.Password,
+                        Valid = true,
+                        ExpirationTime = DateTime.Now.AddMonths(1)
+                    };
+                    context.Users.Add(data);
+                    context.SaveChanges();
+                    return ApiResponse.OK(guid.ToString());
                 }
-                var guid = Guid.NewGuid();
-                var data = new Data()
-                {
-                    Key = guid,
-                    CreateTime = DateTime.Now,
-                    PhoneNumber = signUpRequest.PhoneNumber,
-                    Type = (int)DataType.User,
-                    Valid = true,
-                    Value = JsonConvert.SerializeObject(signUpRequest.ToUser(guid))
-                };
-                DriverDBContext.Instance.Datas.Add(data);
-                DriverDBContext.Instance.SaveChanges();
-                return ApiResponse.OK(guid.ToString());
             }
             catch (Exception ex)
             {
+                var logger = LogManager.GetLogger(typeof(HttpRequest));
+                logger.Error("------------------------api/SignUp error-------------------------------\r\n" + ex.Message);
                 return ApiResponse.UnknownError;
             }
         }
@@ -54,48 +67,47 @@ namespace Driver.Controllers
         {
             try
             {
-                var userData = DriverDBContext.Instance.Datas.SingleOrDefault(x => x.PhoneNumber == signInRequest.PhoneNumber&&x.Type==(int)DataType.User);
-                if (userData == null)
+                using (var context = new DriverDBContext())
                 {
-                    return ApiResponse.UserNotExist;
+                    var user = context.Users.SingleOrDefault(x => x.PhoneNumber == signInRequest.PhoneNumber);
+                    if (user == null)
+                    {
+                        return ApiResponse.UserNotExist;
+                    }
+                    if (user.Password != signInRequest.Password)
+                    {
+                        return ApiResponse.PasswordError;
+                    }
+                    var token = user.Id.ToString();
+
+                    HttpRuntime.Cache.Add(token, token, null, DateTime.Now.AddDays(1), Cache.NoSlidingExpiration,
+                        CacheItemPriority.High, null);
+
+                    Response.Headers.Add("X-Token", token);
+                    Response.Headers.Add("Access-Control-Expose-Headers", "X-Token");
+
+                    return ApiResponse.OK(JsonConvert.SerializeObject(user.ToSignInResponse()));
                 }
-                var user = JsonConvert.DeserializeObject<User>(userData.Value);
-                if (user.Password != signInRequest.Password)
-                {
-                    return ApiResponse.PasswordError;
-                }
-                var token = user.Id.ToString();
-
-                HttpRuntime.Cache.Add(token, token, null, DateTime.Now.AddDays(1), Cache.NoSlidingExpiration, CacheItemPriority.High, null);
-
-                Response.Headers.Add("X-Token", token);
-                Response.Headers.Add("Access-Control-Expose-Headers", "X-Token");
-
-                return ApiResponse.OK(JsonConvert.SerializeObject(user.ToSignInResponse()));
             }
             catch (Exception ex)
             {
-                return ApiResponse.UnknownError; 
+                var logger = LogManager.GetLogger(typeof(HttpRequest));
+                logger.Error("------------------------api/SignIn error-------------------------------\r\n" + ex.Message);
+                return ApiResponse.UnknownError;
             }
         }
 
-        [HttpGet,Route("api/SignOut")]
+        [HttpGet, Route("api/SignOut")]
         public ActionResult SignOut()
         {
             var token = Request.Headers["Token"];
-            if(!string.IsNullOrEmpty(token)) HttpRuntime.Cache.Remove(token);
+            if (!string.IsNullOrEmpty(token)) HttpRuntime.Cache.Remove(token);
             return ApiResponse.OK("你需要重新登录");
-        }
-
-        [HttpGet,Route("api/test")]
-        public ActionResult Test()
-        {
-            return Content("test");
         }
 
         public ActionResult Options()
         {
-            return null; 
+            return null;
         }
     }
 }

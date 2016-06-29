@@ -10,19 +10,6 @@ namespace Driver
         public string CarType { get; set; }
         public string CarNumber { get; set; }
         public string Password { get; set; }
-
-        public User ToUser(Guid id)
-        {
-            return new User()
-            {
-                Id = id,
-                CarNumber = CarNumber,
-                CarType = CarType,
-                Password = Password,
-                Integral = 0,
-                PhoneNumber = PhoneNumber
-            };
-        }
     }
 
     public class SignInRequest
