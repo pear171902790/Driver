@@ -104,10 +104,5 @@ namespace Driver.Controllers
             if (!string.IsNullOrEmpty(token)) HttpRuntime.Cache.Remove(token);
             return ApiResponse.OK("你需要重新登录");
         }
-
-        public ActionResult Options()
-        {
-            return null;
-        }
     }
 }
