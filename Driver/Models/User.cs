@@ -16,6 +16,9 @@ namespace Driver.Models
         public bool Valid { get; set; }
         public DateTime ExpirationTime { get; set; }
         public string ImageUrl { get; set; }
+        public string PostageTypes { get; set; }
+        public string Amount { get; set; }
+        public string Paychannel { get; set; }
 
         public SignInResponse ToSignInResponse()
         {
@@ -25,7 +28,8 @@ namespace Driver.Models
                 PhoneNumber = PhoneNumber,
                 CarNumber = CarNumber,
                 CarType = CarType,
-                Integral = Integral
+                Integral = Integral,
+                ExpireDate = ExpirationTime
             };
         }
     }

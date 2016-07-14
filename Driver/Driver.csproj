@@ -151,7 +151,9 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\ControllerBase.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\PayController.cs" />
     <Compile Include="Convertor.cs" />
     <Compile Include="DriverDBContext.cs" />
     <Compile Include="Global.asax.cs">
@@ -159,8 +161,13 @@
     </Compile>
     <Compile Include="JSONBinder.cs" />
     <Compile Include="LogExtensions.cs" />
+    <Compile Include="Migrations\201607140935562_add users pro.cs" />
+    <Compile Include="Migrations\201607140935562_add users pro.Designer.cs">
+      <DependentUpon>201607140935562_add users pro.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Position.cs" />
+    <Compile Include="Models\PostageType.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\VoiceViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -189,7 +196,6 @@
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="TextFile1.txt" />
-    <Content Include="Voice\777.mp3" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -212,6 +218,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Pay\" />
     <Folder Include="专车助手api文档\" />
   </ItemGroup>
   <ItemGroup>
@@ -220,6 +227,11 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201607140935562_add users pro.resx">
+      <DependentUpon>201607140935562_add users pro.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

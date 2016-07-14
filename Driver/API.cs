@@ -24,6 +24,7 @@ namespace Driver
         public string CarType { get; set; }
         public string CarNumber { get; set; }
         public int Integral { get; set; }
+        public DateTime ExpireDate { get; set; }
     }
 
     
@@ -34,8 +35,16 @@ namespace Driver
         public string Latitude { get; set; }
         public string Address { get; set; }
     }
-
     
+
+    public class PayRequest
+    {
+        public int PostageType { get; set; }
+        public string Paychannel { get; set; }
+        public double Amount { get; set; }
+    }
+
+
     public class GetPositionsResponse
     {
         public int Count

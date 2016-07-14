@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace Driver.Controllers
 {
-    public class AccountController : Controller
+    public class AccountController : ControllerBase
     {
         [HttpPost, Route("api/SignUp")]
         public ActionResult SignUp([ModelBinder(typeof(JsonBinder<SignUpRequest>))]SignUpRequest signUpRequest)
@@ -37,16 +37,17 @@ namespace Driver.Controllers
                         return ApiResponse.CarNumberAlreadySignUp;
                     }
                     var guid = Guid.NewGuid();
+                    var now = DateTime.Now;
                     var data = new User()
                     {
                         Id = guid,
-                        RegsiterTime = DateTime.Now,
+                        RegsiterTime = now,
                         PhoneNumber = signUpRequest.PhoneNumber,
                         CarNumber = signUpRequest.CarNumber,
                         CarType = signUpRequest.CarType,
                         Password = signUpRequest.Password,
                         Valid = true,
-                        ExpirationTime = DateTime.Now.AddMonths(1)
+                        ExpirationTime = now.AddMonths(1)
                     };
                     context.Users.Add(data);
                     context.SaveChanges();

@@ -14,16 +14,11 @@ using Newtonsoft.Json;
 
 namespace Driver.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : ControllerBase
     {
         public ActionResult Index()
         {
             return new ContentResult() { Content = "hello driver" };
-        }
-
-        private bool CheckToken(string token)
-        {
-            return (!string.IsNullOrEmpty(token)) && (HttpRuntime.Cache.Get(token) != null);
         }
 
         [HttpPost, Route("api/UploadPosition")]
@@ -47,18 +42,33 @@ namespace Driver.Controllers
                     postion.Latitude = uploadPositionRequest.Latitude;
                     postion.Longitude = uploadPositionRequest.Longitude;
                     postion.UploadTime = DateTime.Now;
+
                     if (!string.IsNullOrEmpty(uploadPositionRequest.Voice))
                     {
-                        var bytes = Convert.FromBase64String(uploadPositionRequest.Voice);
-                        var voiceName = user.Id + "_" + CurrentTime + ".mp3";
-                        using (
-                            var fs = new FileStream(Server.MapPath("~/Voice/") + voiceName, FileMode.Create))
+                        try
                         {
-                            fs.Write(bytes, 0, bytes.Length);
-                            fs.Close();
+
+                            var bytes = Convert.FromBase64String(uploadPositionRequest.Voice);
+                            var voiceName = user.Id + "_" + CurrentTime + ".mp3";
+                            postion.Voice = voiceName;
+                            var voicePath = Server.MapPath("~/Voice/");
+                            if (!Directory.Exists(voicePath))
+                            {
+                                Directory.CreateDirectory(voicePath);
+                            }
+                            using (var fs = new FileStream(voicePath + voiceName, FileMode.Create))
+                            {
+                                fs.Write(bytes, 0, bytes.Length);
+                                fs.Close();
+                            }
                         }
-                        postion.Voice = voiceName;
+                        catch (Exception ex)
+                        {
+                            var logger = LogManager.GetLogger(typeof(HttpRequest));
+                            logger.Error("------------------------api/Voice error-------------------------------\r\n" + ex.Message);
+                        }
                     }
+
                     context.Positions.Add(postion);
                     context.SaveChanges();
                     return ApiResponse.OK();
@@ -71,9 +81,6 @@ namespace Driver.Controllers
                 return ApiResponse.UnknownError;
             }
         }
-
-
-
 
         [HttpGet, Route("api/Positions")]
         public ActionResult GetPositions()
@@ -90,12 +97,10 @@ namespace Driver.Controllers
                     {
                         return ApiResponse.UserNotExist;
                     }
-                    var now = DateTime.Now;
-                    var begin = new DateTime(now.Year, now.Month, now.Day, 3, 0, 0);
-                    //                var end = new DateTime(now.Year, now.Month, now.AddDays(1).Day, 2, 59, 59);
+                    var begin = DateTime.Now.AddHours(-3);
                     var data =
                         context.Positions.Where(
-                            x => x.UploadTime >= begin && x.UploadTime <= now).ToList();
+                            x => x.UploadTime >= begin).ToList();
                     var positions =
                         data.Select(
                             x =>

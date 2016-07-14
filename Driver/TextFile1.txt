@@ -8,7 +8,7 @@
 请求地址：http://114.215.157.116/api/SignIn
 请求方式：HttpPost
 请求参数示例：{"PhoneNumber":"","Password":"密码需要md5加密"}
-返回数据示例：{"Code":"200","ErrorMessage":"","Result":"{'UserId':'','PhoneNumber':'','CarType':'','CarNumber':'','Integral':''}"}
+返回数据示例：{"Code":"200","ErrorMessage":"","Result":"{\"UserId\":\"e2b09dfb-5de9-43c0-a1f2-82c3f2573af0\",\"PhoneNumber\":\"18609158065\",\"CarType\":\"铃木雨燕\",\"CarNumber\":\"陕gb3810\",\"Integral\":0,\"ExpireDate\":\"2016-07-29T15:34:53.027\"}"}
 注意返回的响应头里有一个“X-Token”(X-Token:"xxx"),需要在后续的请求中将这个token值带在请求头里(Token:"xxx")，否则视为没有登陆
 
 退出
@@ -49,6 +49,19 @@
 请求方式：HttpPost
 请求参数示例：{"ShareType":"微信"}
 返回数据示例：{"Code":"200","ErrorMessage":"","Result":"Success"}
+
+获取资费种类信息
+请求地址：http://114.215.157.116/api/PostageTypes
+请求方式：HttpGet
+返回数据示例：{"Code":"200","ErrorMessage":"","Result":"[{\"Name\":\"三个月\",\"Price\":60,\"Code\":0},{\"Name\":\"半年\",\"Price\":90,\"Code\":1},{\"Name\":\"一年\",\"Price\":150,\"Code\":2}]"}
+
+付费成功通知
+请求地址：http://114.215.157.116/api/Pay
+请求方式：HttpPost
+请求参数示例：{"PostageType":2,"Paychannel":"支付宝","Amount":150}
+返回数据示例：{"Code":"200","ErrorMessage":"","Result":"Success"}
+
+
     
 
 
