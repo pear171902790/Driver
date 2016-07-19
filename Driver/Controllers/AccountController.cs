@@ -81,7 +81,7 @@ namespace Driver.Controllers
                     }
                     var token = user.Id.ToString();
 
-                    HttpRuntime.Cache.Add(token, token, null, DateTime.Now.AddDays(1), Cache.NoSlidingExpiration,
+                    HttpRuntime.Cache.Add(token, token, null, DateTime.Now.AddMonths(1), Cache.NoSlidingExpiration,
                         CacheItemPriority.High, null);
 
                     Response.Headers.Add("X-Token", token);

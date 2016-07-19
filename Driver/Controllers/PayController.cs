@@ -56,7 +56,7 @@ namespace Driver.Controllers
                     user.PostageTypes += payRequest.PostageType + ",";
                     user.Paychannel += payRequest.Paychannel + ",";
                     context.SaveChanges();
-                    return ApiResponse.OK();
+                    return ApiResponse.OK(user.ExpirationTime.ToShortDateString());
                 }
             }
             catch (Exception ex)
