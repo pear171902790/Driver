@@ -28,31 +28,31 @@
     </style>
 </head>
 <body>
-    <div class="table-responsive table-wrap">
-        <table class="table table-bordered table-hover table-striped">
-            <thead>
-            <tr><th>用户名</th><th>语音</th><th>上传时间</th></tr>
-            </thead>
-            <tbody>
-            @foreach (var voice in Model)
-            {
-                <tr>
-                    <td>
-                        @voice.CarNumber
-                    </td>
-                    <td>
-                        <audio controls="controls">
-                            <source src="/Voice/@(voice.Source)" type="audio/mpeg"/>
-                        </audio>
-                    </td>
-                    <td>
-                        @voice.UploadTime
-                    </td>
-                </tr>
-            }
-            </tbody>
-        </table>
-    </div>
+<div class="table-responsive table-wrap">
+    <table class="table table-bordered table-hover table-striped">
+        <thead>
+        <tr><th>用户名</th><th>语音</th><th>上传时间</th></tr>
+        </thead>
+        <tbody>
+        @foreach (var voice in Model)
+        {
+            <tr>
+                <td>
+                    @voice.CarNumber
+                </td>
+                <td>
+                    <video controls="controls" height="30" width="300">
+                        <source src="~/Voice/87de70cc-2bdf-4ad1-b4f7-7bedd68c5975_2016718211939.mp4" type="video/mp4" />
+                    </video>
+                </td>
+                <td>
+                    @voice.UploadTime.ToLocalTime()
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
     <script src="~/Scripts/bootstrap.min.js"></script>
 </body>

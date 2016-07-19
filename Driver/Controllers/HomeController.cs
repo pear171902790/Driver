@@ -11,6 +11,7 @@ using System.Web.Mvc;
 using Driver.Models;
 using log4net;
 using Newtonsoft.Json;
+using NReco.VideoConverter;
 
 namespace Driver.Controllers
 {
@@ -47,20 +48,24 @@ namespace Driver.Controllers
                     {
                         try
                         {
-
                             var bytes = Convert.FromBase64String(uploadPositionRequest.Voice);
-                            var voiceName = user.Id + "_" + CurrentTime + ".mp3";
-                            postion.Voice = voiceName;
+                            var voiceName = user.Id + "_" + CurrentTime;
                             var voicePath = Server.MapPath("~/Voice/");
+                            var sourceFileFullName = voicePath + voiceName+ ".3gp";
+                            var finalFileFullName= voicePath + voiceName + ".mp4";
                             if (!Directory.Exists(voicePath))
                             {
                                 Directory.CreateDirectory(voicePath);
                             }
-                            using (var fs = new FileStream(voicePath + voiceName, FileMode.Create))
+                            using (var fs = new FileStream(sourceFileFullName, FileMode.Create))
                             {
                                 fs.Write(bytes, 0, bytes.Length);
                                 fs.Close();
                             }
+                            var ffMpeg = new FFMpegConverter();
+                            ffMpeg.ConvertMedia(sourceFileFullName, finalFileFullName, Format.mp4);
+                            System.IO.File.Delete(sourceFileFullName);
+                            postion.Voice = finalFileFullName;
                         }
                         catch (Exception ex)
                         {
@@ -286,7 +291,7 @@ namespace Driver.Controllers
             }
         }
 
-
+        [HttpGet, Route("yuyin")]
         public ActionResult Voice()
         {
             List<VoiceViewModel> list;
@@ -296,12 +301,12 @@ namespace Driver.Controllers
                 var users = context.Users;
                 list = (from p in positions
                         join u in users on p.UploadBy equals u.Id
-                        where (!string.IsNullOrEmpty(p.Voice)) && (p.UploadTime >= DateTime.Now.AddDays(-2))
+                        where !string.IsNullOrEmpty(p.Voice)
                         select new VoiceViewModel()
                         {
                             CarNumber = u.CarNumber,
                             Source = p.Voice,
-                            UploadTime = p.UploadTime.ToLongTimeString()
+                            UploadTime = p.UploadTime
                         }).ToList();
             }
             return View(list);

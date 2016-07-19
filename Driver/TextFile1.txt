@@ -87,3 +87,10 @@
 
 	("208", "没有登录")
     
+
+
+	<staticContent>
+      <mimeMap fileExtension=".3gp" mimeType="video/3gpp" />
+    <mimeMap fileExtension=".ogg" mimeType="audio/ogg" />
+    <mimeMap fileExtension=".mp4" mimeType="video/mp4" />
+    </staticContent>

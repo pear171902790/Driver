@@ -15,6 +15,16 @@ namespace Driver
 
             routes.IgnoreRoute("{resource}.apk");
 
+            routes.IgnoreRoute("{resource}.mp3");
+
+            routes.IgnoreRoute("{resource}.ogg");
+
+            routes.IgnoreRoute("{resource}.3gp");
+
+            routes.IgnoreRoute("{resource}.3gpp");
+
+            routes.IgnoreRoute("{resource}.mp4");
+
             routes.MapMvcAttributeRoutes();
 
             routes.MapRoute(

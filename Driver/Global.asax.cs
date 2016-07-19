@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using log4net.Config;
+using NReco.VideoConverter;
 
 namespace Driver
 {
@@ -40,6 +41,7 @@ namespace Driver
            };
 
             //            ConvertVoiceTest();
+            //            TestConvert3gpToMp4();
         }
 
         private void ConvertVoiceTest()
@@ -70,16 +72,47 @@ namespace Driver
             }
         }
 
+        private void TestConvert3gpToMp4()
+        {
+            var voicePath = Server.MapPath("~/Voice/");
+            var voiceName = "87de70cc-2bdf-4ad1-b4f7-7bedd68c5975_2016718211939";
+            var ffMpeg = new FFMpegConverter();
+            ffMpeg.ConvertMedia(voicePath + voiceName + ".3gp", voicePath + voiceName + ".mp4", Format.mp4);
+            File.Delete(voicePath + voiceName + ".3gp");
+        }
+
         private async Task DeleteOldPositions()
         {
             await Task.Run(() =>
             {
-                using (var db = new DriverDBContext())
-                {
-                    var begin = DateTime.Now.AddHours(-3);
-                    db.Positions.Where(x => x.UploadTime < begin).ToList().ForEach(x => db.Positions.Remove(x));
-                }
+//                ClearOldPositions();
+
+//                ClearOldVoices();
             });
+        }
+
+        private void ClearOldPositions()
+        {
+            using (var db = new DriverDBContext())
+            {
+                var begin = DateTime.Now.AddDays(-1);
+                db.Positions.Where(x => x.UploadTime < begin).ToList().ForEach(x => db.Positions.Remove(x));
+            }
+        }
+
+        private void ClearOldVoices()
+        {
+            var voicePath = Server.MapPath("~/Voice/");
+            if (Directory.Exists(voicePath))
+            {
+                var files = Directory.GetFiles(voicePath);
+                foreach (string file in files)
+                {
+                    FileInfo fi = new FileInfo(file);
+                    if (fi.LastAccessTime < DateTime.Now.AddDays(-1))
+                        fi.Delete();
+                }
+            }
         }
     }
 }

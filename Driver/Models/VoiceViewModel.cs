@@ -10,6 +10,6 @@ namespace Driver.Models
         public string CarNumber { get; set; }
         public string Source { get; set; }
 
-        public string UploadTime { get; set; }
+        public DateTime UploadTime { get; set; }
     }
 }
