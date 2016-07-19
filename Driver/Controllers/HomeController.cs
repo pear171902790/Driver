@@ -302,6 +302,7 @@ namespace Driver.Controllers
                 list = (from p in positions
                         join u in users on p.UploadBy equals u.Id
                         where !string.IsNullOrEmpty(p.Voice)
+                        orderby p.UploadTime descending 
                         select new VoiceViewModel()
                         {
                             CarNumber = u.CarNumber,

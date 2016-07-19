@@ -85,9 +85,9 @@ namespace Driver
         {
             await Task.Run(() =>
             {
-//                ClearOldPositions();
+                ClearOldPositions();
 
-//                ClearOldVoices();
+                ClearOldVoices();
             });
         }
 
@@ -97,13 +97,14 @@ namespace Driver
             {
                 var begin = DateTime.Now.AddDays(-1);
                 db.Positions.Where(x => x.UploadTime < begin).ToList().ForEach(x => db.Positions.Remove(x));
+                db.SaveChanges();
             }
         }
 
         private void ClearOldVoices()
         {
-            var voicePath = Server.MapPath("~/Voice/");
-            if (Directory.Exists(voicePath))
+            var voicePath = System.Web.Hosting.HostingEnvironment.MapPath("~/Voice/");
+            if (!string.IsNullOrEmpty(voicePath)&&Directory.Exists(voicePath))
             {
                 var files = Directory.GetFiles(voicePath);
                 foreach (string file in files)

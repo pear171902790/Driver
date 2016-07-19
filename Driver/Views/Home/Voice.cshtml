@@ -31,7 +31,7 @@
 <div class="table-responsive table-wrap">
     <table class="table table-bordered table-hover table-striped">
         <thead>
-        <tr><th>用户名</th><th>语音</th><th>上传时间</th></tr>
+        <tr><th>车牌号</th><th>语音</th><th>上传时间</th></tr>
         </thead>
         <tbody>
         @foreach (var voice in Model)
@@ -41,12 +41,16 @@
                     @voice.CarNumber
                 </td>
                 <td>
-                    <video controls="controls" height="30" width="300">
-                        <source src="~/Voice/87de70cc-2bdf-4ad1-b4f7-7bedd68c5975_2016718211939.mp4" type="video/mp4" />
-                    </video>
+@*                    <video controls="controls" height="30" width="300">*@
+@*                        <source src="~/Voice/@(voice.Source)" type="video/mp4"/>*@
+@*                    </video>*@
+
+                    <audio controls="controls">
+                        <source src="/Voice/@(voice.Source)" type="audio/mpeg" />
+                    </audio>
                 </td>
                 <td>
-                    @voice.UploadTime.ToLocalTime()
+                    @voice.UploadTime
                 </td>
             </tr>
         }
