@@ -95,8 +95,7 @@ namespace Driver
         {
             using (var db = new DriverDBContext())
             {
-                var begin = DateTime.Now.AddDays(-1);
-                db.Positions.Where(x => x.UploadTime < begin).ToList().ForEach(x => db.Positions.Remove(x));
+                db.Positions.Where(x => x.UploadTime < DateTime.Today).ToList().ForEach(x => db.Positions.Remove(x));
                 db.SaveChanges();
             }
         }
@@ -110,7 +109,7 @@ namespace Driver
                 foreach (string file in files)
                 {
                     FileInfo fi = new FileInfo(file);
-                    if (fi.LastAccessTime < DateTime.Now.AddDays(-1))
+                    if (fi.LastAccessTime < DateTime.Today)
                         fi.Delete();
                 }
             }

@@ -13,8 +13,6 @@ namespace Driver
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
-            routes.IgnoreRoute("{resource}.apk");
-
             routes.IgnoreRoute("{resource}.mp3");
 
             routes.IgnoreRoute("{resource}.ogg");

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http.Controllers;
 using System.Web.Mvc;
@@ -46,32 +47,37 @@ namespace Driver.Controllers
 
                     if (!string.IsNullOrEmpty(uploadPositionRequest.Voice))
                     {
-                        try
+                        Task.Run(() =>
                         {
-                            var bytes = Convert.FromBase64String(uploadPositionRequest.Voice);
-                            var voiceName = user.Id + "_" + CurrentTime;
-                            var voicePath = Server.MapPath("~/Voice/");
-                            var sourceFileFullName = voicePath + voiceName+ ".3gp";
-                            var finalFileFullName= voicePath + voiceName + ".mp4";
-                            if (!Directory.Exists(voicePath))
+                            try
                             {
-                                Directory.CreateDirectory(voicePath);
+                                var bytes = Convert.FromBase64String(uploadPositionRequest.Voice);
+                                var voiceName = user.Id + "_" + CurrentTime;
+                                var voicePath = Server.MapPath("~/Voice/");
+                                var sourceFileFullName = voicePath + voiceName + ".3gp";
+                                var finalFileFullName = voicePath + voiceName + ".mp4";
+                                if (!Directory.Exists(voicePath))
+                                {
+                                    Directory.CreateDirectory(voicePath);
+                                }
+                                using (var fs = new FileStream(sourceFileFullName, FileMode.Create))
+                                {
+                                    fs.Write(bytes, 0, bytes.Length);
+                                    fs.Close();
+                                }
+                                var ffMpeg = new FFMpegConverter();
+                                ffMpeg.ConvertMedia(sourceFileFullName, finalFileFullName, Format.mp4);
+                                System.IO.File.Delete(sourceFileFullName);
+                                postion.Voice = finalFileFullName;
                             }
-                            using (var fs = new FileStream(sourceFileFullName, FileMode.Create))
+                            catch (Exception ex)
                             {
-                                fs.Write(bytes, 0, bytes.Length);
-                                fs.Close();
+                                var logger = LogManager.GetLogger(typeof (HttpRequest));
+                                logger.Error(
+                                    "------------------------api/Voice error-------------------------------\r\n" +
+                                    ex.Message);
                             }
-                            var ffMpeg = new FFMpegConverter();
-                            ffMpeg.ConvertMedia(sourceFileFullName, finalFileFullName, Format.mp4);
-                            System.IO.File.Delete(sourceFileFullName);
-                            postion.Voice = finalFileFullName;
-                        }
-                        catch (Exception ex)
-                        {
-                            var logger = LogManager.GetLogger(typeof(HttpRequest));
-                            logger.Error("------------------------api/Voice error-------------------------------\r\n" + ex.Message);
-                        }
+                        });
                     }
 
                     context.Positions.Add(postion);
@@ -113,7 +119,8 @@ namespace Driver.Controllers
                                 {
                                     Latitude = x.Latitude,
                                     Longitude = x.Longitude,
-                                    Address = x.Address
+                                    Address = x.Address,
+                                    UploadTime = x.UploadTime
                                 }).ToList();
 
                     var result = new GetPositionsResponse()
@@ -128,6 +135,52 @@ namespace Driver.Controllers
             {
                 var logger = LogManager.GetLogger(typeof(HttpRequest));
                 logger.Error("------------------------api/Positions error-------------------------------\r\n" + ex.Message);
+                return ApiResponse.UnknownError;
+            }
+        }
+
+        [HttpGet, Route("api/AllPositions")]
+        public ActionResult GetAllPositions()
+        {
+            try
+            {
+                var token = Request.Headers["Token"];
+                if (!CheckToken(token)) return ApiResponse.NotSignIn;
+                var guid = new Guid(token);
+                using (var context = new DriverDBContext())
+                {
+                    var user = context.Users.SingleOrDefault(x => x.Id == guid);
+                    if (user == null)
+                    {
+                        return ApiResponse.UserNotExist;
+                    }
+                    var begin = DateTime.Today;
+                    var data =
+                        context.Positions.Where(
+                            x => x.UploadTime >= begin).ToList();
+                    var positions =
+                        data.Select(
+                            x =>
+                                new GetPositionsResponse.Position()
+                                {
+                                    Latitude = x.Latitude,
+                                    Longitude = x.Longitude,
+                                    Address = x.Address,
+                                    UploadTime = x.UploadTime
+                                }).ToList();
+
+                    var result = new GetPositionsResponse()
+                    {
+                        Positions = positions
+                    };
+
+                    return ApiResponse.OK(JsonConvert.SerializeObject(result));
+                }
+            }
+            catch (Exception ex)
+            {
+                var logger = LogManager.GetLogger(typeof(HttpRequest));
+                logger.Error("------------------------api/AllPositions error-------------------------------\r\n" + ex.Message);
                 return ApiResponse.UnknownError;
             }
         }
@@ -199,27 +252,7 @@ namespace Driver.Controllers
         }
 
 
-        [HttpGet, Route("api/version")]
-        public ActionResult GetVersion()
-        {
-            try
-            {
-                var dirinfo = new DirectoryInfo(GetApkFolderPath());
-                var files = dirinfo.GetFiles();
-                Array.Sort<FileInfo>(files, new FIleLastTimeComparer());
-                var fileName = files[0].Name;
-                var result = new GetVersionResponse()
-                {
-                    LatestVersion = fileName,
-                    DownloadUrl = "http://114.215.157.116/APK/" + fileName
-                };
-                return ApiResponse.OK(JsonConvert.SerializeObject(result));
-            }
-            catch (Exception)
-            {
-                return ApiResponse.UnknownError;
-            }
-        }
+        
 
         [HttpPost, Route("api/share")]
         public ActionResult Share([ModelBinder(typeof(JsonBinder<ShareRequest>))]ShareRequest shareRequest)
@@ -261,35 +294,9 @@ namespace Driver.Controllers
             return View();
         }
 
-        private string GetRootPath()
-        {
-            string AppPath = "";
-            HttpContext HttpCurrent = System.Web.HttpContext.Current;
-            if (HttpCurrent != null)
-            {
-                AppPath = HttpCurrent.Server.MapPath("~");
-            }
-            else
-            {
-                AppPath = AppDomain.CurrentDomain.BaseDirectory;
-                if (Regex.Match(AppPath, @"\\$", RegexOptions.Compiled).Success)
-                    AppPath = AppPath.Substring(0, AppPath.Length - 1);
-            }
-            return AppPath;
-        }
+        
 
-        private string GetApkFolderPath()
-        {
-            return GetRootPath() + @"\APK";
-        }
-        public class FIleLastTimeComparer : IComparer<FileInfo>
-        {
-            public int Compare(FileInfo x, FileInfo y)
-            {
-                return y.LastWriteTime.CompareTo(x.LastWriteTime);//递减
-                //return x.LastWriteTime.CompareTo(y.LastWriteTime);//递增
-            }
-        }
+        
 
         [HttpGet, Route("yuyin")]
         public ActionResult Voice()

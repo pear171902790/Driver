@@ -158,6 +158,7 @@
     <Compile Include="Controllers\ControllerBase.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PayController.cs" />
+    <Compile Include="Controllers\VersionController.cs" />
     <Compile Include="Convertor.cs" />
     <Compile Include="DriverDBContext.cs" />
     <Compile Include="Global.asax.cs">
@@ -169,7 +170,16 @@
     <Compile Include="Migrations\201607140935562_add users pro.Designer.cs">
       <DependentUpon>201607140935562_add users pro.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201608010233000_add_app_version.cs" />
+    <Compile Include="Migrations\201608010233000_add_app_version.Designer.cs">
+      <DependentUpon>201608010233000_add_app_version.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608010619202_change_property_of_appversion.cs" />
+    <Compile Include="Migrations\201608010619202_change_property_of_appversion.Designer.cs">
+      <DependentUpon>201608010619202_change_property_of_appversion.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\AppVersion.cs" />
     <Compile Include="Models\Position.cs" />
     <Compile Include="Models\PostageType.cs" />
     <Compile Include="Models\User.cs" />
@@ -222,6 +232,7 @@
     </Content>
     <Content Include="Views\Home\Voice.cshtml" />
     <Content Include="Voice\87de70cc-2bdf-4ad1-b4f7-7bedd68c5975_2016718211939.ogg" />
+    <Content Include="Views\Version\Version.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -238,6 +249,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201607140935562_add users pro.resx">
       <DependentUpon>201607140935562_add users pro.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608010233000_add_app_version.resx">
+      <DependentUpon>201608010233000_add_app_version.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608010619202_change_property_of_appversion.resx">
+      <DependentUpon>201608010619202_change_property_of_appversion.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -20,5 +20,7 @@ namespace Driver
         public DbSet<User> Users { get; set; }
 
         public DbSet<Position> Positions { get; set; }
+
+        public DbSet<AppVersion> AppVersions { get; set; }
     }
 }

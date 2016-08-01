@@ -59,6 +59,7 @@ namespace Driver
             public string Longitude { get; set; }
             public string Latitude { get; set; }
             public string Address { get; set; }
+            public DateTime UploadTime { get; set; }
         }
     }
 
@@ -81,8 +82,9 @@ namespace Driver
    
     public class GetVersionResponse
     {
-        public string LatestVersion { get; set; }
+        public string VersionName { get; set; }
         public string DownloadUrl { get; set; }
+        public int VersionCode { get; set; }
     }
 
     

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Driver;
 using System.Net;
 using System.IO;
+using System.Threading;
 
 namespace TestAPI
 {
@@ -69,24 +70,34 @@ namespace TestAPI
         static void Main(string[] args)
         {
 
-            try
+            Console.WriteLine("11");
+            Task.Run(() =>
             {
-                throw new Exception();
-            }
-            catch (Exception ex)
-            {
-
-                Console.WriteLine("catch");
-            }
-            finally
-            {
-                Console.WriteLine("catch waimiande");
-
-            }
+                Thread.Sleep(2000);
+                Console.WriteLine("2222");
+            });
+            Console.WriteLine("333");
 
 
-            Console.WriteLine("catch waimiande");
-            
+
+//            try
+//            {
+//                throw new Exception();
+//            }
+//            catch (Exception ex)
+//            {
+//
+//                Console.WriteLine("catch");
+//            }
+//            finally
+//            {
+//                Console.WriteLine("catch waimiande");
+//
+//            }
+//
+//
+//            Console.WriteLine("catch waimiande");
+//            
 
 
 
