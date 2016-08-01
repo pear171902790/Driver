@@ -25,7 +25,7 @@ namespace Driver.Controllers
                 {
                     VersionName = appVersion.VersionName,
                     VersionCode = appVersion.VersionCode,
-                    DownloadUrl = Request.Url.Authority+"/apk/" + appVersion.FileName.Substring(0,appVersion.FileName.IndexOf('.'))
+                    DownloadUrl = Request.Url.Authority+"/apk/" + appVersion.FileName
                 };
                 return ApiResponse.OK(JsonConvert.SerializeObject(result));
             }
@@ -35,18 +35,18 @@ namespace Driver.Controllers
             }
         }
 
-        [HttpGet, Route("apk/{fileName}")]
-        public ActionResult DownloadApk(string fileName)
-        {
-            fileName += ".apk";
-            Response.ContentType = "application/x-zip-compressed";
-            Response.AddHeader("Content-Disposition", "attachment;filename="+fileName);
-            string filename = Server.MapPath("~/APK/"+fileName);
-            Response.TransmitFile(filename);
-            Response.Flush();
-            Response.End();
-            return new EmptyResult();
-        }
+//        [HttpGet, Route("apk/{fileName}")]
+//        public ActionResult DownloadApk(string fileName)
+//        {
+//            fileName += ".apk";
+//            Response.ContentType = "application/x-zip-compressed";
+//            Response.AddHeader("Content-Disposition", "attachment;filename="+fileName);
+//            string filename = Server.MapPath("~/APK/"+fileName);
+//            Response.TransmitFile(filename);
+//            Response.Flush();
+//            Response.End();
+//            return new EmptyResult();
+//        }
 
         [HttpGet, Route("version")]
         public ActionResult Version()
