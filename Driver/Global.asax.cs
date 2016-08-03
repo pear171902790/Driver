@@ -93,15 +93,17 @@ namespace Driver
 
         private void ClearOldPositions()
         {
+            var begin = DateTime.Now.AddDays(-1);
             using (var db = new DriverDBContext())
             {
-                db.Positions.Where(x => x.UploadTime < DateTime.Today).ToList().ForEach(x => db.Positions.Remove(x));
+                db.Positions.Where(x => x.UploadTime < begin).ToList().ForEach(x => db.Positions.Remove(x));
                 db.SaveChanges();
             }
         }
 
         private void ClearOldVoices()
         {
+            var begin = DateTime.Now.AddDays(-1);
             var voicePath = System.Web.Hosting.HostingEnvironment.MapPath("~/Voice/");
             if (!string.IsNullOrEmpty(voicePath)&&Directory.Exists(voicePath))
             {
@@ -109,7 +111,7 @@ namespace Driver
                 foreach (string file in files)
                 {
                     FileInfo fi = new FileInfo(file);
-                    if (fi.LastAccessTime < DateTime.Today)
+                    if (fi.LastAccessTime < begin)
                         fi.Delete();
                 }
             }

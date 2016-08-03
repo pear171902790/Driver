@@ -154,7 +154,7 @@ namespace Driver.Controllers
                     {
                         return ApiResponse.UserNotExist;
                     }
-                    var begin = DateTime.Today;
+                    var begin = DateTime.Now.AddDays(-1);
                     var data =
                         context.Positions.Where(
                             x => x.UploadTime >= begin).ToList();
