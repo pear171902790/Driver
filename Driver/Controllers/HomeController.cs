@@ -108,6 +108,10 @@ namespace Driver.Controllers
                     {
                         return ApiResponse.UserNotExist;
                     }
+                    if (user.ExpirationTime < DateTime.Now)
+                    {
+                        return ApiResponse.Expired;
+                    }
                     var begin = DateTime.Now.AddHours(-3);
                     var data =
                         context.Positions.Where(
@@ -153,6 +157,10 @@ namespace Driver.Controllers
                     if (user == null)
                     {
                         return ApiResponse.UserNotExist;
+                    }
+                    if (user.ExpirationTime < DateTime.Now)
+                    {
+                        return ApiResponse.Expired;
                     }
                     var begin = DateTime.Now.AddDays(-1);
                     var data =

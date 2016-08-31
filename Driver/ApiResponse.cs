@@ -20,6 +20,11 @@ namespace Driver
         //回应对象的JSON格式
         public string Result { get; set; }
 
+        public static JsonResult Expired
+        {
+            get { return new JsonResult() { Data = new ApiResponse("404", "该会员已过期", string.Empty), JsonRequestBehavior = JsonRequestBehavior.AllowGet }; }
+        }
+
         public static JsonResult PhoneNumberAlreadySignUp
         {
             get { return new JsonResult() { Data = new ApiResponse("201", "该手机号已经被注册", string.Empty), JsonRequestBehavior = JsonRequestBehavior.AllowGet }; }
