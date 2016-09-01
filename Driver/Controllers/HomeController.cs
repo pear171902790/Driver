@@ -115,7 +115,7 @@ namespace Driver.Controllers
                     var begin = DateTime.Now.AddHours(-3);
                     var data =
                         context.Positions.Where(
-                            x => x.UploadTime >= begin).ToList();
+                            x => x.UploadTime >= begin && (!string.IsNullOrEmpty(x.Address))).ToList();
                     var positions =
                         data.Select(
                             x =>
@@ -165,7 +165,7 @@ namespace Driver.Controllers
                     var begin = DateTime.Now.AddDays(-1);
                     var data =
                         context.Positions.Where(
-                            x => x.UploadTime >= begin).ToList();
+                            x => x.UploadTime >= begin&&(!string.IsNullOrEmpty(x.Address))).ToList();
                     var positions =
                         data.Select(
                             x =>
